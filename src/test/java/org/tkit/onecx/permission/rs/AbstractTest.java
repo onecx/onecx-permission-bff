@@ -16,6 +16,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(MockServerTestResource.class)
 public abstract class AbstractTest {
 
+    protected static final String MOCKID = "MOCK";
+
     protected static final String ADMIN = "alice";
 
     protected static final String USER = "bob";

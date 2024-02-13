@@ -640,8 +640,6 @@ components:
     WorkspaceSearchCriteria:
       type: object
       properties:
-        themeName:
-          type: string
         pageNumber:
           format: int32
           description: The number of page.
