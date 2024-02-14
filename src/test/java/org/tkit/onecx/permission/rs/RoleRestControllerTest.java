@@ -247,4 +247,96 @@ class RoleRestControllerTest extends AbstractTest {
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
+
+    @Test
+    void updateRoleTest() {
+
+        String id = "test-id";
+
+        UpdateRoleRequest request = new UpdateRoleRequest();
+        request.name("role1").description("desc1").modificationCount(0);
+
+        mockServerClient.when(request().withPath("/internal/roles/" + id).withMethod(HttpMethod.PUT)
+                .withBody(JsonBody.json(request)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON));
+
+        UpdateRoleRequestDTO requestDTO = new UpdateRoleRequestDTO();
+        requestDTO.name("role1").description("desc1").modificationCount(0);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .pathParam("id", id)
+                .body(requestDTO)
+                .put("/{id}")
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void updateRoleNotFoundTest() {
+
+        String id = "test-id";
+
+        UpdateRoleRequest request = new UpdateRoleRequest();
+        request.name("role1").description("desc1").modificationCount(0);
+
+        mockServerClient.when(request().withPath("/internal/roles/" + id).withMethod(HttpMethod.PUT)
+                .withBody(JsonBody.json(request)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NOT_FOUND.getStatusCode()));
+
+        UpdateRoleRequestDTO requestDTO = new UpdateRoleRequestDTO();
+        requestDTO.name("role1").description("desc1").modificationCount(0);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .pathParam("id", id)
+                .body(requestDTO)
+                .put("/{id}")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void updateRoleValidationErrorTest() {
+
+        String id = "test-id";
+
+        UpdateRoleRequest request = new UpdateRoleRequest();
+        request.description("desc1");
+
+        mockServerClient.when(request().withPath("/internal/roles/" + id).withMethod(HttpMethod.PUT)
+                .withBody(JsonBody.json(request)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode()));
+
+        UpdateRoleRequestDTO requestDTO = new UpdateRoleRequestDTO();
+        requestDTO.description("desc1");
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .pathParam("id", id)
+                .body(requestDTO)
+                .put("/{id}")
+                .then()
+                .contentType(APPLICATION_JSON)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+    }
 }

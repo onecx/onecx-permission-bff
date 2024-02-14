@@ -79,4 +79,9 @@ public class RoleRestController implements RoleApiService {
     public Response restException(WebApplicationException ex) {
         return Response.status(ex.getResponse().getStatus()).build();
     }
+
+    @ServerExceptionMapper
+    public RestResponse<ProblemDetailResponseDTO> constraint(ConstraintViolationException ex) {
+        return exceptionMapper.constraint(ex);
+    }
 }
