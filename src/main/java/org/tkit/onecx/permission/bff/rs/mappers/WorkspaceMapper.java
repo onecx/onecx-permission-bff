@@ -1,19 +1,14 @@
 package org.tkit.onecx.permission.bff.rs.mappers;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspacePageResultDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
-import gen.org.tkit.onecx.permission.client.model.WorkspacePageResult;
-import gen.org.tkit.onecx.permission.client.model.WorkspaceSearchCriteria;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProductDTO;
+import gen.org.tkit.onecx.permission.client.model.Product;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public interface WorkspaceMapper {
-    @Mapping(target = "themeName", ignore = true)
-    WorkspaceSearchCriteria map(WorkspaceSearchCriteriaDTO workspaceSearchCriteriaDTO);
+    ProductDTO[] map(Product[] products);
 
-    @Mapping(target = "removeStreamItem", ignore = true)
-    WorkspacePageResultDTO map(WorkspacePageResult pageResult);
+    ProductDTO map(Product product);
 }

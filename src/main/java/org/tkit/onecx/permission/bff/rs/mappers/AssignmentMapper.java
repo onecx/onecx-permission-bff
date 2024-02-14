@@ -19,6 +19,7 @@ public interface AssignmentMapper {
 
     AssignmentDTO map(Assignment assignment);
 
+    @Mapping(target = "appId", source = "appIds")
     AssignmentSearchCriteria map(AssignmentSearchCriteriaDTO assignmentSearchCriteriaDTO);
 
     @Mapping(target = "removeStreamItem", ignore = true)

@@ -325,28 +325,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  /workspaces/search:
-    post:
+  /workspaces:
+    get:
       x-onecx:
         permissions:
           permission:
             - read
       tags:
         - workspace
-      description: search workspace abstracts by criteria
-      operationId: searchWorkspaces
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WorkspaceSearchCriteria'
+      description: get all workspace names
+      operationId: getAllWorkspaceNames
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkspacePageResult'
+                $ref: '#/components/schemas/WorkspaceNameList'
+  /workspaces/{workspaceName}/products:
+    get:
+      x-onecx:
+        permissions:
+          permission:
+            - read
+      tags:
+        - workspace
+      description: get all products by workspace name
+      operationId: getAllProductsByWorkspaceName
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
 components:
   schemas:
     CreateRoleRequest:
@@ -491,8 +511,10 @@ components:
     AssignmentSearchCriteria:
       type: object
       properties:
-        appId:
-          type: string
+        appIds:
+          type: array
+          items:
+            type: string
         pageNumber:
           format: int32
           description: The number of page.
@@ -550,6 +572,8 @@ components:
         roleId:
           type: string
         permissionId:
+          type: string
+        appId:
           type: string
     ApplicationSearchCriteria:
       type: object
@@ -610,46 +634,19 @@ components:
           type: string
         description:
           type: string
-    WorkspacePageResult:
+    WorkspaceNameList:
+      type: array
+      items:
+        type: string
+    Product:
       type: object
       properties:
-        totalElements:
-          format: int64
-          description: The total elements in the resource.
-          type: integer
-        number:
-          format: int32
-          type: integer
-        size:
-          format: int32
-          type: integer
-        totalPages:
-          format: int64
-          type: integer
-        stream:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkspaceAbstract'
-    WorkspaceAbstract:
-      type: object
-      properties:
-        name:
+        id:
           type: string
-        description:
+        productName:
           type: string
-    WorkspaceSearchCriteria:
-      type: object
-      properties:
-        pageNumber:
-          format: int32
-          description: The number of page.
-          default: 0
-          type: integer
-        pageSize:
-          format: int32
-          description: The size of page
-          default: 10
-          type: integer
+        baseUrl:
+          type: string
     OffsetDateTime:
       format: date-time
       type: string

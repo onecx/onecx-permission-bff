@@ -1,11 +1,11 @@
 package org.tkit.onecx.permission.rs;
 
 import static io.restassured.RestAssured.given;
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.Response;
@@ -14,17 +14,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.JsonBody;
-import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.WorkspaceRestController;
 
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspacePageResultDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
-import gen.org.tkit.onecx.permission.client.model.WorkspaceAbstract;
-import gen.org.tkit.onecx.permission.client.model.WorkspacePageResult;
-import gen.org.tkit.onecx.permission.client.model.WorkspaceSearchCriteria;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProductDTO;
+import gen.org.tkit.onecx.permission.client.model.Product;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusTest
 @TestHTTPEndpoint(WorkspaceRestController.class)
@@ -34,71 +31,66 @@ class WorkspaceRestControllerTest extends AbstractTest {
     MockServerClient mockServerClient;
 
     @Test
-    void searchWorkspaceByCriteriaTest() {
-        WorkspaceSearchCriteria criteria = new WorkspaceSearchCriteria();
-        criteria.pageNumber(1).pageSize(1);
-
-        WorkspacePageResult pageResult = new WorkspacePageResult();
-        WorkspaceAbstract workspace = new WorkspaceAbstract();
-        workspace.name("workspace1").description("desc1");
-        pageResult.stream(List.of(workspace)).size(1).number(1).totalElements(1L).totalPages(1L);
-
+    void getAllWorkspaceNamesTest() {
+        ArrayList<String> workspaceNames = new ArrayList<>();
+        workspaceNames.add("workspace1");
+        workspaceNames.add("workspace2");
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/workspaces/search").withMethod(HttpMethod.POST)
-                .withBody(JsonBody.json(criteria)))
+        mockServerClient
+                .when(request().withPath("/v1/workspaces").withMethod(HttpMethod.GET))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withContentType(MediaType.APPLICATION_JSON)
-                        .withBody(JsonBody.json(pageResult)));
-
-        WorkspaceSearchCriteriaDTO criteriaDTO = new WorkspaceSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).pageSize(1);
+                        .withBody(JsonBody.json(workspaceNames)));
 
         var output = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
                 .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(criteriaDTO)
-                .post()
+                .get()
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
-                .contentType(APPLICATION_JSON)
-                .extract().as(WorkspacePageResultDTO.class);
+                .extract().as(new TypeRef<String[]>() {
+                });
 
         Assertions.assertNotNull(output);
-        Assertions.assertEquals(pageResult.getSize(), output.getSize());
-        Assertions.assertEquals(pageResult.getStream().size(), output.getStream().size());
-        Assertions.assertEquals(pageResult.getStream().get(0).getName(), output.getStream().get(0).getName());
-        Assertions.assertEquals(pageResult.getStream().get(0).getDescription(), output.getStream().get(0).getDescription());
+        Assertions.assertTrue(Arrays.stream(output).toList().contains("workspace1"));
+        Assertions.assertTrue(Arrays.stream(output).toList().contains("workspace2"));
 
-        mockServerClient.clear(MOCKID);
     }
 
     @Test
-    void searchWorkspacesByEmptyCriteriaTest() {
+    void getAllProductsByWorkspaceNameTest() {
+        String workspaceName = "workspace1";
 
-        WorkspaceSearchCriteria criteria = new WorkspaceSearchCriteria();
+        Product product1 = new Product();
+        product1.productName("product1");
+        Product product2 = new Product();
+        product2.productName("product2");
+
+        ArrayList<Product> products = new ArrayList<>();
+        products.add(product1);
+        products.add(product2);
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/workspaces/search").withMethod(HttpMethod.POST)
-                .withBody(JsonBody.json(criteria)))
+        mockServerClient
+                .when(request().withPath("/v1/workspaces/" + workspaceName + "/products").withMethod(HttpMethod.GET))
                 .withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                        .withContentType(MediaType.APPLICATION_JSON));
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withBody(JsonBody.json(products)));
 
-        WorkspaceSearchCriteriaDTO criteriaDTO = new WorkspaceSearchCriteriaDTO();
-
-        given()
+        var output = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
                 .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(criteriaDTO)
-                .post()
+                .pathParam("workspaceName", workspaceName)
+                .get("/{workspaceName}/products")
                 .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract().as(new TypeRef<ProductDTO[]>() {
+                });
 
-        mockServerClient.clear(MOCKID);
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(Arrays.stream(output).toList().size(), 2);
     }
+
 }
