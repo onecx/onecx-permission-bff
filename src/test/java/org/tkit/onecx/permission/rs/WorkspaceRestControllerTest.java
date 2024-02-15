@@ -90,7 +90,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
                 });
 
         Assertions.assertNotNull(output);
-        Assertions.assertEquals(Arrays.stream(output).toList().size(), 2);
+        Assertions.assertEquals(2, Arrays.stream(output).toList().size());
     }
 
 }
