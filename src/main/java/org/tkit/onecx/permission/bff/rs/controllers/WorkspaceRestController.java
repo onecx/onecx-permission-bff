@@ -1,5 +1,8 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -10,9 +13,14 @@ import org.tkit.onecx.permission.bff.rs.mappers.WorkspaceMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.WorkspaceApiService;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceDetailsDTO;
 import gen.org.tkit.onecx.permission.client.api.ProductExternalApi;
 import gen.org.tkit.onecx.permission.client.api.WorkspaceExternalApi;
 import gen.org.tkit.onecx.permission.client.model.Product;
+import gen.org.tkit.onecx.permission.client.model.Workspace;
+import gen.org.tkit.onecx.product.store.client.api.ProductsApi;
+import gen.org.tkit.onecx.product.store.client.model.ProductItemLoadSearchCriteria;
+import gen.org.tkit.onecx.product.store.client.model.ProductsLoadResult;
 
 @ApplicationScoped
 @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
@@ -26,6 +34,10 @@ public class WorkspaceRestController implements WorkspaceApiService {
     @RestClient
     @Inject
     ProductExternalApi productClient;
+
+    @RestClient
+    @Inject
+    ProductsApi productStoreClient;
 
     @Inject
     WorkspaceMapper mapper;
@@ -41,6 +53,34 @@ public class WorkspaceRestController implements WorkspaceApiService {
     public Response getAllWorkspaceNames() {
         try (Response response = workspaceClient.getAllWorkspaceNames()) {
             return Response.status(response.getStatus()).entity(response.readEntity(String[].class)).build();
+        }
+    }
+
+    @Override
+    public Response getDetailsByWorkspaceName(String workspaceName) {
+        try (Response response = workspaceClient.getWorkspaceByName(workspaceName)) {
+            WorkspaceDetailsDTO workspaceDetails;
+            List<String> productNames;
+            List<String> workspaceRoles;
+            ProductsLoadResult productsLoadResult;
+            var workspaceResponse = response.readEntity(Workspace.class);
+            workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
+
+            //get products of workspace
+            try (Response wsProductsResponse = productClient.getProducts(workspaceName)) {
+                //list of product names registered in workspace
+                productNames = Arrays.stream(wsProductsResponse.readEntity(Product[].class))
+                        .map(Product::getProductName).toList();
+
+                //get mfe and ms for each product by name from product-store
+                ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
+                mfeAndMsCriteria.setProductNames(productNames);
+                try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
+                    productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
+                }
+                workspaceDetails = mapper.map(workspaceRoles, productsLoadResult);
+            }
+            return Response.status(Response.Status.OK).entity(workspaceDetails).build();
         }
     }
 }
