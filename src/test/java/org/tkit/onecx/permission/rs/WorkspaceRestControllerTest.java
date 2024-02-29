@@ -1,6 +1,7 @@
 package org.tkit.onecx.permission.rs;
 
 import static io.restassured.RestAssured.given;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -16,12 +17,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.JsonBody;
+import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.WorkspaceRestController;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProductDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceDetailsDTO;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspacePageResultDTO;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
+import gen.org.tkit.onecx.permission.client.model.*;
 import gen.org.tkit.onecx.permission.client.model.Product;
-import gen.org.tkit.onecx.permission.client.model.Workspace;
 import gen.org.tkit.onecx.product.store.client.model.*;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -36,31 +40,49 @@ class WorkspaceRestControllerTest extends AbstractTest {
     MockServerClient mockServerClient;
 
     @Test
-    void getAllWorkspaceNamesTest() {
-        ArrayList<String> workspaceNames = new ArrayList<>();
-        workspaceNames.add("workspace1");
-        workspaceNames.add("workspace2");
+    void searchWorkspacesTest() {
+        WorkspaceSearchCriteria criteria = new WorkspaceSearchCriteria();
+        criteria.setPageNumber(0);
+        criteria.setPageSize(100);
+
+        WorkspaceAbstract abstract1 = new WorkspaceAbstract();
+        abstract1.setName("workspace1");
+        WorkspaceAbstract abstract2 = new WorkspaceAbstract();
+        abstract1.setName("workspace2");
+
+        WorkspacePageResult pageResult = new WorkspacePageResult();
+        pageResult.setStream(List.of(abstract1, abstract2));
+        pageResult.setTotalElements(2L);
+        pageResult.setNumber(0);
+        pageResult.setTotalPages(1L);
+        pageResult.setSize(100);
+
         // create mock rest endpoint
         mockServerClient
-                .when(request().withPath("/v1/workspaces").withMethod(HttpMethod.GET))
+                .when(request().withPath("/v1/workspaces/search").withMethod(HttpMethod.POST)
+                        .withBody(JsonBody.json(criteria))
+                        .withContentType(MediaType.APPLICATION_JSON))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withBody(JsonBody.json(workspaceNames)));
+                        .withBody(JsonBody.json(pageResult)));
+        var input = new WorkspaceSearchCriteriaDTO();
+        input.setPageSize(100);
+        input.setPageNumber(0);
 
         var output = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
                 .header(APM_HEADER_PARAM, ADMIN)
-                .get()
+                .contentType(APPLICATION_JSON)
+                .body(input)
+                .post("/search")
                 .then()
+                .contentType(APPLICATION_JSON)
                 .statusCode(Response.Status.OK.getStatusCode())
-                .extract().as(new TypeRef<String[]>() {
-                });
+                .extract().as(WorkspacePageResultDTO.class);
 
         Assertions.assertNotNull(output);
-        Assertions.assertTrue(Arrays.stream(output).toList().contains("workspace1"));
-        Assertions.assertTrue(Arrays.stream(output).toList().contains("workspace2"));
-
+        Assertions.assertEquals(2, output.getStream().size());
     }
 
     @Test
@@ -75,13 +97,15 @@ class WorkspaceRestControllerTest extends AbstractTest {
         ArrayList<Product> products = new ArrayList<>();
         products.add(product1);
         products.add(product2);
+        WorkspaceLoad load = new WorkspaceLoad();
+        load.setProducts(products);
 
         // create mock rest endpoint
         mockServerClient
-                .when(request().withPath("/v1/workspaces/" + workspaceName + "/products").withMethod(HttpMethod.GET))
+                .when(request().withPath("/v1/workspaces/" + workspaceName + "/load").withMethod(HttpMethod.GET))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withBody(JsonBody.json(products)));
+                        .withBody(JsonBody.json(load)));
 
         var output = given()
                 .when()
@@ -107,7 +131,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
 
         // create mock rest endpoint
         mockServerClient
-                .when(request().withPath("/v1/workspaces/name/" + workspaceName).withMethod(HttpMethod.GET))
+                .when(request().withPath("/v1/workspaces/" + workspaceName).withMethod(HttpMethod.GET))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withBody(JsonBody.json(workspace)));
@@ -120,12 +144,15 @@ class WorkspaceRestControllerTest extends AbstractTest {
         productsOfWorkspace.add(product1);
         productsOfWorkspace.add(product2);
 
+        WorkspaceLoad loadResponse = new WorkspaceLoad();
+        loadResponse.setName(workspaceName);
+        loadResponse.setProducts(productsOfWorkspace);
         // create mock rest endpoint
         mockServerClient
-                .when(request().withPath("/v1/workspaces/" + workspaceName + "/products").withMethod(HttpMethod.GET))
+                .when(request().withPath("/v1/workspaces/" + workspaceName + "/load").withMethod(HttpMethod.GET))
                 .withId("MOCKID2")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withBody(JsonBody.json(productsOfWorkspace)));
+                        .withBody(JsonBody.json(loadResponse)));
 
         List<String> productNames = List.of("product1", "product2");
         ProductItemLoadSearchCriteria criteria = new ProductItemLoadSearchCriteria();

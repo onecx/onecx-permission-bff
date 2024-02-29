@@ -1,6 +1,5 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,10 +13,12 @@ import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.WorkspaceApiService;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceDetailsDTO;
-import gen.org.tkit.onecx.permission.client.api.ProductExternalApi;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
 import gen.org.tkit.onecx.permission.client.api.WorkspaceExternalApi;
 import gen.org.tkit.onecx.permission.client.model.Product;
 import gen.org.tkit.onecx.permission.client.model.Workspace;
+import gen.org.tkit.onecx.permission.client.model.WorkspaceLoad;
+import gen.org.tkit.onecx.permission.client.model.WorkspacePageResult;
 import gen.org.tkit.onecx.product.store.client.api.ProductsApi;
 import gen.org.tkit.onecx.product.store.client.model.ProductItemLoadSearchCriteria;
 import gen.org.tkit.onecx.product.store.client.model.ProductsLoadResult;
@@ -33,10 +34,6 @@ public class WorkspaceRestController implements WorkspaceApiService {
 
     @RestClient
     @Inject
-    ProductExternalApi productClient;
-
-    @RestClient
-    @Inject
     ProductsApi productStoreClient;
 
     @Inject
@@ -44,15 +41,16 @@ public class WorkspaceRestController implements WorkspaceApiService {
 
     @Override
     public Response getAllProductsByWorkspaceName(String workspaceName) {
-        try (Response response = productClient.getProducts(workspaceName)) {
-            return Response.status(response.getStatus()).entity(mapper.map(response.readEntity(Product[].class))).build();
+        try (Response response = workspaceClient.loadWorkspaceByName(workspaceName)) {
+            return Response.status(response.getStatus()).entity(mapper.map(response.readEntity(WorkspaceLoad.class))).build();
         }
     }
 
     @Override
-    public Response getAllWorkspaceNames() {
-        try (Response response = workspaceClient.getAllWorkspaceNames()) {
-            return Response.status(response.getStatus()).entity(response.readEntity(String[].class)).build();
+    public Response searchWorkspaces(WorkspaceSearchCriteriaDTO criteriaDTO) {
+        try (Response response = workspaceClient.searchWorkspaces(mapper.map(criteriaDTO))) {
+            return Response.status(response.getStatus()).entity(mapper.map(response.readEntity(WorkspacePageResult.class)))
+                    .build();
         }
     }
 
@@ -67,9 +65,9 @@ public class WorkspaceRestController implements WorkspaceApiService {
             workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
 
             //get products of workspace
-            try (Response wsProductsResponse = productClient.getProducts(workspaceName)) {
+            try (Response wsProductsResponse = workspaceClient.loadWorkspaceByName(workspaceName)) {
                 //list of product names registered in workspace
-                productNames = Arrays.stream(wsProductsResponse.readEntity(Product[].class))
+                productNames = wsProductsResponse.readEntity(WorkspaceLoad.class).getProducts().stream()
                         .map(Product::getProductName).toList();
 
                 //get mfe and ms for each product by name from product-store
