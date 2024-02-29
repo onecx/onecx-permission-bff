@@ -45,6 +45,13 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
+    public Response createProductAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
+        try (Response response = assignmentClient.createProductAssignment(mapper.map(createProductAssignmentsRequestDTO))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
     public Response deleteAssignment(String id) {
         try (Response response = assignmentClient.deleteAssignment(id)) {
             return Response.status(response.getStatus()).build();
@@ -56,6 +63,13 @@ public class AssignmentRestController implements AssignmentApiService {
         try (Response response = assignmentClient.getAssignment(id)) {
             AssignmentDTO responseDTO = mapper.map(response.readEntity(Assignment.class));
             return Response.status(response.getStatus()).entity(responseDTO).build();
+        }
+    }
+
+    @Override
+    public Response revokeAssignments(RevokeAssignmentRequestDTO revokeAssignmentRequestDTO) {
+        try (Response response = assignmentClient.revokeAssignments(mapper.map(revokeAssignmentRequestDTO))) {
+            return Response.status(response.getStatus()).build();
         }
     }
 

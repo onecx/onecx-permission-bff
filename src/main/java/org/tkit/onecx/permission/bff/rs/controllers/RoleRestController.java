@@ -1,5 +1,10 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
+import static jakarta.ws.rs.core.Response.Status.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,11 +41,21 @@ public class RoleRestController implements RoleApiService {
     ExceptionMapper exceptionMapper;
 
     @Override
-    public Response createRole(CreateRoleRequestDTO createRoleRequestDTO) {
-        try (Response response = roleClient
-                .createRole(mapper.map(createRoleRequestDTO))) {
-            RoleDTO responseDTO = mapper.map(response.readEntity(Role.class));
-            return Response.status(response.getStatus()).entity(responseDTO).build();
+    public Response createRole(CreateRolesRequestDTO createsRoleRequestDTO) {
+        List<RoleDTO> createdRoles = new ArrayList<>();
+        createsRoleRequestDTO.getRoles().forEach(r -> {
+            try (Response response = roleClient
+                    .createRole(mapper.map(r))) {
+                createdRoles.add(mapper.map(response.readEntity(Role.class)));
+            } catch (Exception ex) {
+                // ignore failed creation
+            }
+        });
+        if (!createdRoles.isEmpty()) {
+            return Response.status(CREATED).entity(createdRoles).build();
+        } else {
+            return Response.status(BAD_REQUEST)
+                    .entity(new ProblemDetailResponseDTO().errorCode("400").detail("No roles created")).build();
         }
     }
 

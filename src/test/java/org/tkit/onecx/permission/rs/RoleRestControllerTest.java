@@ -43,9 +43,10 @@ class RoleRestControllerTest extends AbstractTest {
                 .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(response)));
-
-        CreateRoleRequestDTO input = new CreateRoleRequestDTO();
-        input.name("role1").description("desc1");
+        CreateRolesRequestDTO input = new CreateRolesRequestDTO();
+        CreateRoleRequestDTO role = new CreateRoleRequestDTO();
+        role.name("role1").description("desc1");
+        input.setRoles(List.of(role));
 
         var output = given()
                 .when()
@@ -57,7 +58,7 @@ class RoleRestControllerTest extends AbstractTest {
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .contentType(APPLICATION_JSON)
-                .extract().as(RoleDTO.class);
+                .extract().as(RoleDTO[].class);
 
         // standard USER get FORBIDDEN with only READ permission
         given()
@@ -71,8 +72,8 @@ class RoleRestControllerTest extends AbstractTest {
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
         Assertions.assertNotNull(output);
-        Assertions.assertEquals(request.getName(), output.getName());
-        Assertions.assertEquals(request.getDescription(), output.getDescription());
+        Assertions.assertEquals(request.getName(), output[0].getName());
+        Assertions.assertEquals(request.getDescription(), output[0].getDescription());
         mockServerClient.clear(MOCKID);
     }
 
@@ -86,7 +87,9 @@ class RoleRestControllerTest extends AbstractTest {
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON));
 
-        CreateRoleRequestDTO input = new CreateRoleRequestDTO();
+        CreateRolesRequestDTO input = new CreateRolesRequestDTO();
+        CreateRoleRequestDTO role = new CreateRoleRequestDTO();
+        input.setRoles(List.of(role));
 
         given()
                 .when()
