@@ -14,6 +14,10 @@
           "appId": "onecx-permission-bff",
           "permissions": {
             "permission": ["read", "write", "delete"],
+            "application": ["read", "write", "delete"],
+            "assignment": ["read", "write", "delete"],
+            "role": ["read", "write", "delete"],
+            "workspace": ["read", "write", "delete"],
             "permissions": ["admin-write","admin-read"]
           }
         },
@@ -36,6 +40,10 @@
           "appId": "onecx-permission-bff",
           "permissions": {
             "permission": ["read"],
+            "role": ["read"],
+            "application": ["read"],
+            "workspace": ["read"],
+            "assignment": ["read"],
             "permissions": ["admin-write","admin-read"]
           }
         },

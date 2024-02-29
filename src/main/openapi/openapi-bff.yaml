@@ -15,7 +15,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          role:
             - write
       tags:
         - role
@@ -46,7 +46,7 @@ paths:
     get:
       x-onecx:
         permissions:
-          permission:
+          role:
             - read
       tags:
         - role
@@ -70,7 +70,7 @@ paths:
     put:
       x-onecx:
         permissions:
-          permission:
+          role:
             - write
       tags:
         - role
@@ -106,7 +106,7 @@ paths:
     delete:
       x-onecx:
         permissions:
-          permission:
+          role:
             - delete
       tags:
         - role
@@ -125,7 +125,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          role:
             - read
       tags:
         - role
@@ -183,7 +183,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - read
       tags:
         - assignment
@@ -212,7 +212,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - write
       tags:
         - assignment
@@ -249,7 +249,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - write
       tags:
         - assignment
@@ -274,7 +274,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - delete
       tags:
         - assignment
@@ -299,7 +299,7 @@ paths:
     get:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - read
       tags:
         - assignment
@@ -323,7 +323,7 @@ paths:
     delete:
       x-onecx:
         permissions:
-          permission:
+          assignment:
             - delete
       tags:
         - assignment
@@ -342,7 +342,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          application:
             - read
       tags:
         - application
@@ -371,11 +371,11 @@ paths:
     post:
       x-onecx:
         permissions:
-          permission:
+          workspace:
             - read
       tags:
         - workspace
-      description: get all workspace names
+      description: search workspaces by criteria
       operationId: searchWorkspaces
       requestBody:
         required: true
@@ -394,7 +394,7 @@ paths:
     get:
       x-onecx:
         permissions:
-          permission:
+          workspace:
             - read
       tags:
         - workspace
@@ -419,7 +419,7 @@ paths:
     get:
       x-onecx:
         permissions:
-          permission:
+          workspace:
             - read
       tags:
         - workspace
