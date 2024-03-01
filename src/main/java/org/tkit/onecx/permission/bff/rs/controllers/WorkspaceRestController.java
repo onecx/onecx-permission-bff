@@ -1,5 +1,6 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -59,10 +60,12 @@ public class WorkspaceRestController implements WorkspaceApiService {
         try (Response response = workspaceClient.getWorkspaceByName(workspaceName)) {
             WorkspaceDetailsDTO workspaceDetails;
             List<String> productNames;
-            List<String> workspaceRoles;
+            List<String> workspaceRoles = new ArrayList<>();
             ProductsLoadResult productsLoadResult;
             var workspaceResponse = response.readEntity(Workspace.class);
-            workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
+            if (workspaceResponse.getWorkspaceRoles() != null) {
+                workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
+            }
 
             //get products of workspace
             try (Response wsProductsResponse = workspaceClient.loadWorkspaceByName(workspaceName)) {
