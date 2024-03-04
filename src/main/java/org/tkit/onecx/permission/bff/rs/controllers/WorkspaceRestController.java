@@ -61,7 +61,7 @@ public class WorkspaceRestController implements WorkspaceApiService {
             WorkspaceDetailsDTO workspaceDetails;
             List<String> productNames;
             List<String> workspaceRoles = new ArrayList<>();
-            ProductsLoadResult productsLoadResult;
+            ProductsLoadResult productsLoadResult = new ProductsLoadResult();
             var workspaceResponse = response.readEntity(Workspace.class);
             if (workspaceResponse.getWorkspaceRoles() != null) {
                 workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
@@ -72,12 +72,13 @@ public class WorkspaceRestController implements WorkspaceApiService {
                 //list of product names registered in workspace
                 productNames = wsProductsResponse.readEntity(WorkspaceLoad.class).getProducts().stream()
                         .map(Product::getProductName).toList();
-
-                //get mfe and ms for each product by name from product-store
-                ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
-                mfeAndMsCriteria.setProductNames(productNames);
-                try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
-                    productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
+                if (!productNames.isEmpty()) {
+                    //get mfe and ms for each product by name from product-store
+                    ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
+                    mfeAndMsCriteria.setProductNames(productNames);
+                    try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
+                        productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
+                    }
                 }
                 workspaceDetails = mapper.map(workspaceRoles, productsLoadResult);
             }
