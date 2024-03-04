@@ -38,10 +38,12 @@ class PermissionRestControllerTest extends AbstractTest {
 
         PermissionSearchCriteria criteria = new PermissionSearchCriteria();
         criteria.pageNumber(1).appId("app1").pageSize(1);
+        criteria.setProductNames(List.of("product1"));
 
         PermissionPageResult pageResult = new PermissionPageResult();
         Permission permission = new Permission();
         permission.appId("app1").action("delete").id("id1");
+        permission.setProductName("product1");
         pageResult.stream(List.of(permission)).size(1).number(1).totalElements(1L).totalPages(1L);
 
         // create mock rest endpoint
@@ -53,7 +55,7 @@ class PermissionRestControllerTest extends AbstractTest {
                         .withBody(JsonBody.json(pageResult)));
 
         PermissionSearchCriteriaDTO criteriaDTO = new PermissionSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).appId("app1").pageSize(1);
+        criteriaDTO.pageNumber(1).appId("app1").pageSize(1).productNames(List.of("product1"));
 
         var output = given()
                 .when()
