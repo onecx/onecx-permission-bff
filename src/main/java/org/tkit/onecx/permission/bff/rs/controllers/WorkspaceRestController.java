@@ -6,9 +6,12 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
+import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.WorkspaceMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
@@ -39,6 +42,9 @@ public class WorkspaceRestController implements WorkspaceApiService {
 
     @Inject
     WorkspaceMapper mapper;
+
+    @Inject
+    ExceptionMapper exceptionMapper;
 
     @Override
     public Response getAllProductsByWorkspaceName(String workspaceName) {
@@ -84,5 +90,10 @@ public class WorkspaceRestController implements WorkspaceApiService {
             }
             return Response.status(Response.Status.OK).entity(workspaceDetails).build();
         }
+    }
+
+    @ServerExceptionMapper
+    public Response restException(WebApplicationException ex) {
+        return Response.status(ex.getResponse().getStatus()).build();
     }
 }

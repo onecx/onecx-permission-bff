@@ -20,10 +20,7 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.WorkspaceRestController;
 
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProductDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceDetailsDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspacePageResultDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 import gen.org.tkit.onecx.permission.client.model.Product;
 import gen.org.tkit.onecx.product.store.client.model.*;
@@ -261,5 +258,28 @@ class WorkspaceRestControllerTest extends AbstractTest {
 
         mockServerClient.clear(MOCKID);
         mockServerClient.clear("MOCKID2");
+    }
+
+    @Test
+    void getDetailsByInvalidWorkspaceNameTest() {
+
+        String workspaceName = "test-workspace";
+        // create mock rest endpoint
+        mockServerClient
+                .when(request().withPath("/v1/workspaces/" + workspaceName).withMethod(HttpMethod.GET))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NOT_FOUND.getStatusCode()));
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .pathParam("workspaceName", workspaceName)
+                .get("/{workspaceName}/details")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+
     }
 }
