@@ -6,9 +6,12 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
+import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.WorkspaceMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
@@ -40,6 +43,9 @@ public class WorkspaceRestController implements WorkspaceApiService {
     @Inject
     WorkspaceMapper mapper;
 
+    @Inject
+    ExceptionMapper exceptionMapper;
+
     @Override
     public Response getAllProductsByWorkspaceName(String workspaceName) {
         try (Response response = workspaceClient.loadWorkspaceByName(workspaceName)) {
@@ -61,7 +67,7 @@ public class WorkspaceRestController implements WorkspaceApiService {
             WorkspaceDetailsDTO workspaceDetails;
             List<String> productNames;
             List<String> workspaceRoles = new ArrayList<>();
-            ProductsLoadResult productsLoadResult;
+            ProductsLoadResult productsLoadResult = new ProductsLoadResult();
             var workspaceResponse = response.readEntity(Workspace.class);
             if (workspaceResponse.getWorkspaceRoles() != null) {
                 workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
@@ -72,16 +78,22 @@ public class WorkspaceRestController implements WorkspaceApiService {
                 //list of product names registered in workspace
                 productNames = wsProductsResponse.readEntity(WorkspaceLoad.class).getProducts().stream()
                         .map(Product::getProductName).toList();
-
-                //get mfe and ms for each product by name from product-store
-                ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
-                mfeAndMsCriteria.setProductNames(productNames);
-                try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
-                    productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
+                if (!productNames.isEmpty()) {
+                    //get mfe and ms for each product by name from product-store
+                    ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
+                    mfeAndMsCriteria.setProductNames(productNames);
+                    try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
+                        productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
+                    }
                 }
                 workspaceDetails = mapper.map(workspaceRoles, productsLoadResult);
             }
             return Response.status(Response.Status.OK).entity(workspaceDetails).build();
         }
+    }
+
+    @ServerExceptionMapper
+    public Response restException(WebApplicationException ex) {
+        return Response.status(ex.getResponse().getStatus()).build();
     }
 }

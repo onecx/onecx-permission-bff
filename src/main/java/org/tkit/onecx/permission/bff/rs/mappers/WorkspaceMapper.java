@@ -1,5 +1,6 @@
 package org.tkit.onecx.permission.bff.rs.mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -39,7 +40,11 @@ public interface WorkspaceMapper {
     default WorkspaceDetailsDTO map(List<String> workspaceRoles, ProductsLoadResult productsLoadResult) {
         WorkspaceDetailsDTO workspaceDetailsDTO = new WorkspaceDetailsDTO();
         workspaceDetailsDTO.setWorkspaceRoles(workspaceRoles);
-        workspaceDetailsDTO.setProducts(map(productsLoadResult.getStream()));
+        if (productsLoadResult.getStream() != null) {
+            workspaceDetailsDTO.setProducts(map(productsLoadResult.getStream()));
+        } else {
+            workspaceDetailsDTO.setProducts(new ArrayList<>());
+        }
         return workspaceDetailsDTO;
     }
 
