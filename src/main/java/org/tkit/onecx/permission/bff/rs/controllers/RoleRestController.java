@@ -19,6 +19,8 @@ import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.RoleMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
+import gen.org.tkit.onecx.iam.client.api.AdminRoleControllerApi;
+import gen.org.tkit.onecx.iam.client.model.RolePageResultIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.RoleApiService;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.api.RoleInternalApi;
@@ -33,6 +35,10 @@ public class RoleRestController implements RoleApiService {
     @RestClient
     @Inject
     RoleInternalApi roleClient;
+
+    @RestClient
+    @Inject
+    AdminRoleControllerApi iamClient;
 
     @Inject
     RoleMapper mapper;
@@ -70,6 +76,15 @@ public class RoleRestController implements RoleApiService {
     public Response getRoleById(String id) {
         try (Response response = roleClient.getRoleById(id)) {
             RoleDTO responseDTO = mapper.map(response.readEntity(Role.class));
+            return Response.status(response.getStatus()).entity(responseDTO).build();
+        }
+    }
+
+    @Override
+    public Response searchAvailableRoles(IAMRoleSearchCriteriaDTO searchCriteriaDTO) {
+        try (Response response = iamClient.searchRolesByCriteria(mapper.map(searchCriteriaDTO))) {
+            IAMRolePageResultDTO responseDTO = mapper
+                    .map(response.readEntity(RolePageResultIamV1.class));
             return Response.status(response.getStatus()).entity(responseDTO).build();
         }
     }

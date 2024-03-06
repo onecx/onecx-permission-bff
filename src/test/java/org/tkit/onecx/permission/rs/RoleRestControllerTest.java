@@ -17,6 +17,9 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.RoleRestController;
 
+import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
+import gen.org.tkit.onecx.iam.client.model.RolePageResultIamV1;
+import gen.org.tkit.onecx.iam.client.model.RoleSearchCriteriaIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
@@ -132,6 +135,46 @@ class RoleRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
                 .post("/search")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(RolePageResultDTO.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(pageResult.getSize(), output.getSize());
+        Assertions.assertEquals(pageResult.getStream().size(), output.getStream().size());
+        Assertions.assertEquals(pageResult.getStream().get(0).getName(), output.getStream().get(0).getName());
+        Assertions.assertEquals(pageResult.getStream().get(0).getDescription(), output.getStream().get(0).getDescription());
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void searchIAMRoleByCriteriaTest() {
+        RoleSearchCriteriaIamV1 criteria = new RoleSearchCriteriaIamV1();
+
+        RolePageResultIamV1 pageResult = new RolePageResultIamV1();
+        RoleIamV1 role = new RoleIamV1();
+        role.name("role1").description("desc1");
+        pageResult.stream(List.of(role)).size(1).number(1).totalElements(1L).totalPages(1L);
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/roles/search").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(criteria)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(pageResult)));
+
+        IAMRoleSearchCriteriaDTO criteriaDTO = new IAMRoleSearchCriteriaDTO();
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/iam/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(APPLICATION_JSON)
