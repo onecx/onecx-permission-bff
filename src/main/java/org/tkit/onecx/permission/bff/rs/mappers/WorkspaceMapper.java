@@ -48,6 +48,7 @@ public interface WorkspaceMapper {
         return workspaceDetailsDTO;
     }
 
+    @Mapping(target = "baseUrl", ignore = true)
     WorkspaceSearchCriteria map(WorkspaceSearchCriteriaDTO criteriaDTO);
 
     @Mapping(target = "removeStreamItem", ignore = true)
