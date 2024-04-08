@@ -274,7 +274,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  /assignments/product:
+  /assignments/grant:
     post:
       x-onecx:
         permissions:
@@ -283,7 +283,7 @@ paths:
       tags:
         - assignment
       description: Create new assignments for products
-      operationId: createProductAssignments
+      operationId: grantAssignment
       requestBody:
         required: true
         content:
@@ -714,9 +714,10 @@ components:
       type: object
       required:
         - roleId
-        - productNames
       properties:
         roleId:
+          type: string
+        appId:
           type: string
         productNames:
           type: array
@@ -728,6 +729,8 @@ components:
         - roleId
       properties:
         roleId:
+          type: string
+        appId:
           type: string
         permissionId:
           type: string
