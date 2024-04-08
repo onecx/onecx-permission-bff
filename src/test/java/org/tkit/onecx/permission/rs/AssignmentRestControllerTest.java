@@ -105,7 +105,7 @@ class AssignmentRestControllerTest extends AbstractTest {
     @Test
     void searchAssignmentByCriteriaTest() {
         AssignmentSearchCriteria criteria = new AssignmentSearchCriteria();
-        criteria.pageNumber(1).pageSize(1).appId(List.of("app1"));
+        criteria.pageNumber(1).pageSize(1).roleId("role1").appIds(List.of("app1"));
 
         AssignmentPageResult pageResult = new AssignmentPageResult();
         Assignment assignment = new Assignment();
@@ -121,7 +121,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                         .withBody(JsonBody.json(pageResult)));
 
         AssignmentSearchCriteriaDTO criteriaDTO = new AssignmentSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).appIds(List.of("app1")).pageSize(1);
+        criteriaDTO.pageNumber(1).roleId("role1").appIds(List.of("app1")).pageSize(1);
 
         var output = given()
                 .when()
