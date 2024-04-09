@@ -45,8 +45,8 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
-    public Response createProductAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
-        try (Response response = assignmentClient.createProductAssignment(mapper.map(createProductAssignmentsRequestDTO))) {
+    public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
+        try (Response response = assignmentClient.grantAssignment(mapper.map(createProductAssignmentsRequestDTO))) {
             return Response.status(response.getStatus()).build();
         }
     }

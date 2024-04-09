@@ -257,7 +257,7 @@ class AssignmentRestControllerTest extends AbstractTest {
         request.setProductNames(List.of("product1"));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/internal/assignments/product").withMethod(HttpMethod.POST)
+        mockServerClient.when(request().withPath("/internal/assignments/grant").withMethod(HttpMethod.POST)
                 .withBody(JsonBody.json(request)))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
@@ -272,7 +272,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(requestDTO)
-                .post("/product")
+                .post("/grant")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode());
     }
