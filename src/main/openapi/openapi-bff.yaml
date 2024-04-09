@@ -282,8 +282,8 @@ paths:
             - write
       tags:
         - assignment
-      description: Create new assignments for products
-      operationId: grantAssignment
+      description: Create new assignments by criteria
+      operationId: grantAssignments
       requestBody:
         required: true
         content:
@@ -292,7 +292,7 @@ paths:
               $ref: '#/components/schemas/CreateProductAssignmentsRequest'
       responses:
         201:
-          description: New assignment created
+          description: New assignments created
         400:
           description: Bad request
           content:
