@@ -7,6 +7,8 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.util.List;
 
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
+import gen.org.tkit.onecx.permission.client.model.*;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.Response;
 
@@ -17,11 +19,6 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.PermissionRestController;
 
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.PermissionPageResultDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.PermissionSearchCriteriaDTO;
-import gen.org.tkit.onecx.permission.client.model.Permission;
-import gen.org.tkit.onecx.permission.client.model.PermissionPageResult;
-import gen.org.tkit.onecx.permission.client.model.PermissionSearchCriteria;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -63,7 +60,7 @@ class PermissionRestControllerTest extends AbstractTest {
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(APPLICATION_JSON)
@@ -96,9 +93,194 @@ class PermissionRestControllerTest extends AbstractTest {
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void getPermissionTest() {
+
+        Permission permission = new Permission();
+        permission.appId("app1").action("delete").id("id1");
+        permission.setProductName("product1");
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.GET))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(permission)));
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .get("/id1")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode());
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void createPermissionTest() {
+
+        Permission permission = new Permission();
+        permission.appId("testAppId1").action("CREATE").id("id1");
+        permission.setProductName("product1");
+
+        CreatePermissionRequest createPermissionRequest = new CreatePermissionRequest();
+        createPermissionRequest.action("CREATE").appId("testAppId1");
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/permissions").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(createPermissionRequest)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(permission)));
+
+        CreatePermissionRequestDTO createPermissionRequestDTO = new CreatePermissionRequestDTO();
+        createPermissionRequestDTO.action("CREATE").appId("testAppId1").productName("product1");
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(createPermissionRequestDTO)
+                .post()
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(PermissionDTO.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(permission.getAppId(), output.getAppId());
+        Assertions.assertEquals(permission.getAction(), output.getAction());
+        Assertions.assertEquals(permission.getProductName(), output.getProductName());
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .post()
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(ProblemDetailResponse.class);
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void updatePermissionTest(){
+        Permission permission = new Permission();
+        permission.appId("testAppId1").action("PUT").id("id1");
+        permission.setProductName("product1");
+
+        UpdatePermissionRequest updatePermissionRequest = new UpdatePermissionRequest();
+        updatePermissionRequest.action("PUT").appId("testAppId1");
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.PUT)
+                        .withBody(JsonBody.json(updatePermissionRequest)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(permission)));
+
+        UpdatePermissionRequestDTO updatePermissionRequestDTO = new UpdatePermissionRequestDTO();
+        updatePermissionRequestDTO.action("PUT").appId("testAppId1").productName("product1").modificationCount(0);
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(updatePermissionRequestDTO)
+                .put("/id1")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(PermissionDTO.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(permission.getAppId(), output.getAppId());
+        Assertions.assertEquals(permission.getAction(), output.getAction());
+        Assertions.assertEquals(permission.getProductName(), output.getProductName());
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .put("/id1")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(ProblemDetailResponse.class);
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void updatePermissionWithoutModificationCountTest(){
+        Permission permission = new Permission();
+        permission.appId("testAppId1").action("PUT").id("id1");
+        permission.setProductName("product1");
+
+        UpdatePermissionRequest updatePermissionRequest = new UpdatePermissionRequest();
+        updatePermissionRequest.action("PUT").appId("testAppId1");
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.PUT)
+                        .withBody(JsonBody.json(updatePermissionRequest)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(permission)));
+
+        UpdatePermissionRequestDTO updatePermissionRequestDTO = new UpdatePermissionRequestDTO();
+        updatePermissionRequestDTO.action("PUT").appId("testAppId1").productName("product1");
+
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(updatePermissionRequestDTO)
+                .put("/id1")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(ProblemDetailResponse.class);
+
+        mockServerClient.clear(MOCKID);
+    }
+
+    @Test
+    void deletePermissionTest() {
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.DELETE))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode()));
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .delete("/id1")
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         mockServerClient.clear(MOCKID);
     }
