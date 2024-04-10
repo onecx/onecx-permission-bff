@@ -7,8 +7,6 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.util.List;
 
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
-import gen.org.tkit.onecx.permission.client.model.*;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.Response;
 
@@ -19,6 +17,8 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.PermissionRestController;
 
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
+import gen.org.tkit.onecx.permission.client.model.*;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -179,7 +179,7 @@ class PermissionRestControllerTest extends AbstractTest {
     }
 
     @Test
-    void updatePermissionTest(){
+    void updatePermissionTest() {
         Permission permission = new Permission();
         permission.appId("testAppId1").action("PUT").id("id1");
         permission.setProductName("product1");
@@ -189,7 +189,7 @@ class PermissionRestControllerTest extends AbstractTest {
 
         // create mock rest endpoint
         mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.PUT)
-                        .withBody(JsonBody.json(updatePermissionRequest)))
+                .withBody(JsonBody.json(updatePermissionRequest)))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -230,7 +230,7 @@ class PermissionRestControllerTest extends AbstractTest {
     }
 
     @Test
-    void updatePermissionWithoutModificationCountTest(){
+    void updatePermissionWithoutModificationCountTest() {
         Permission permission = new Permission();
         permission.appId("testAppId1").action("PUT").id("id1");
         permission.setProductName("product1");
@@ -240,7 +240,7 @@ class PermissionRestControllerTest extends AbstractTest {
 
         // create mock rest endpoint
         mockServerClient.when(request().withPath("/internal/permissions/id1").withMethod(HttpMethod.PUT)
-                        .withBody(JsonBody.json(updatePermissionRequest)))
+                .withBody(JsonBody.json(updatePermissionRequest)))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -248,7 +248,6 @@ class PermissionRestControllerTest extends AbstractTest {
 
         UpdatePermissionRequestDTO updatePermissionRequestDTO = new UpdatePermissionRequestDTO();
         updatePermissionRequestDTO.action("PUT").appId("testAppId1").productName("product1");
-
 
         given()
                 .when()
