@@ -6,8 +6,9 @@ info:
 servers:
   - url: "http://onecx-permission-bff:8080"
 tags:
-  - name: permission
+  - name: application
   - name: assignment
+  - name: permission
   - name: role
   - name: workspace
 paths:
