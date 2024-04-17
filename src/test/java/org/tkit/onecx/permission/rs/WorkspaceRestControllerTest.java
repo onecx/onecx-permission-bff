@@ -83,6 +83,34 @@ class WorkspaceRestControllerTest extends AbstractTest {
     }
 
     @Test
+    void searchWorkspaces_Internal_Server_Error_Test() {
+        WorkspaceSearchCriteria criteria = new WorkspaceSearchCriteria();
+        criteria.setPageNumber(0);
+        criteria.setPageSize(100);
+
+        // create mock rest endpoint
+        mockServerClient
+                .when(request().withPath("/v1/workspaces/search").withMethod(HttpMethod.POST)
+                        .withBody(JsonBody.json(criteria))
+                        .withContentType(MediaType.APPLICATION_JSON))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+        var input = new WorkspaceSearchCriteriaDTO();
+        input.setPageSize(100);
+        input.setPageNumber(0);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(input)
+                .post("/search")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
     void getAllProductsByWorkspaceNameTest() {
         String workspaceName = "workspace1";
 
