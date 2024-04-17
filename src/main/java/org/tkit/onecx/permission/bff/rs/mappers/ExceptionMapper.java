@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -56,5 +57,13 @@ public interface ExceptionMapper {
 
     default String mapPath(Path path) {
         return path.toString();
+    }
+
+    default Response clientException(ClientWebApplicationException ex) {
+        if (ex.getResponse().getStatus() == 500) {
+            return Response.status(400).build();
+        } else {
+            return Response.status(ex.getResponse().getStatus()).build();
+        }
     }
 }
