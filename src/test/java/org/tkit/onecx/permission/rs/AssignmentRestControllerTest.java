@@ -274,6 +274,34 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .post("/grant")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode());
+
+        requestDTO.setAppId("");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .post("/grant")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role1/product").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON));
+
+        requestDTO.setAppId("app1");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .post("/grant")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+
     }
 
     @Test

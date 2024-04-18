@@ -51,32 +51,21 @@ public class AssignmentRestController implements AssignmentApiService {
 
         // app-id not null, take only first product from list
         if (createProductAssignmentsRequestDTO.getAppId() != null && !createProductAssignmentsRequestDTO.getAppId().isEmpty()) {
-            if (createProductAssignmentsRequestDTO.getProductNames() != null
-                    && !createProductAssignmentsRequestDTO.getProductNames().isEmpty()) {
-                int status = Response.Status.BAD_REQUEST.getStatusCode();
-                for (int i = 0; i < createProductAssignmentsRequestDTO.getProductNames().size(); i++) {
-                    try (Response response = assignmentClient.grantRoleProductAssignments(
-                            createProductAssignmentsRequestDTO.getRoleId(),
-                            mapper.mapRoleProduct(createProductAssignmentsRequestDTO, i))) {
-                        status = response.getStatus();
-                    }
+            int status = Response.Status.BAD_REQUEST.getStatusCode();
+            for (int i = 0; i < createProductAssignmentsRequestDTO.getProductNames().size(); i++) {
+                try (Response response = assignmentClient.grantRoleProductAssignments(
+                        createProductAssignmentsRequestDTO.getRoleId(),
+                        mapper.mapRoleProduct(createProductAssignmentsRequestDTO, i))) {
+                    status = response.getStatus();
                 }
-                return Response.status(status).build();
             }
+            return Response.status(status).build();
         }
 
         // list of product-names
-        if (createProductAssignmentsRequestDTO.getProductNames() != null
-                && !createProductAssignmentsRequestDTO.getProductNames().isEmpty()) {
-            try (Response response = assignmentClient.grantRoleProductsAssignments(
-                    createProductAssignmentsRequestDTO.getRoleId(),
-                    mapper.mapRoleProducts(createProductAssignmentsRequestDTO))) {
-                return Response.status(response.getStatus()).build();
-            }
-        }
-
-        // only role-id defined
-        try (Response response = assignmentClient.grantRoleAssignments(createProductAssignmentsRequestDTO.getRoleId())) {
+        try (Response response = assignmentClient.grantRoleProductsAssignments(
+                createProductAssignmentsRequestDTO.getRoleId(),
+                mapper.mapRoleProducts(createProductAssignmentsRequestDTO))) {
             return Response.status(response.getStatus()).build();
         }
     }
