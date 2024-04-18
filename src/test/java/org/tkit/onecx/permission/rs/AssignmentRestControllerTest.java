@@ -252,12 +252,11 @@ class AssignmentRestControllerTest extends AbstractTest {
     @Test
     void createProductAssignmentsTest() {
 
-        CreateProductAssignmentRequest request = new CreateProductAssignmentRequest();
-        request.setRoleId("role1");
+        CreateRoleProductsAssignmentRequest request = new CreateRoleProductsAssignmentRequest();
         request.setProductNames(List.of("product1"));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/internal/assignments/grant").withMethod(HttpMethod.POST)
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role1/products").withMethod(HttpMethod.POST)
                 .withBody(JsonBody.json(request)))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
@@ -275,6 +274,34 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .post("/grant")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode());
+
+        requestDTO.setAppId("");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .post("/grant")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role1/product").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON));
+
+        requestDTO.setAppId("app1");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .post("/grant")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+
     }
 
     @Test
