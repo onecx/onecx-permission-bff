@@ -46,7 +46,37 @@ public class AssignmentRestController implements AssignmentApiService {
 
     @Override
     public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
-        try (Response response = assignmentClient.grantAssignments(mapper.map(createProductAssignmentsRequestDTO))) {
+
+        //!!! This is workaround for current UI
+
+        // app-id not null, take only first product from list
+        if (createProductAssignmentsRequestDTO.getAppId() != null && !createProductAssignmentsRequestDTO.getAppId().isEmpty()) {
+            if (createProductAssignmentsRequestDTO.getProductNames() != null
+                    && !createProductAssignmentsRequestDTO.getProductNames().isEmpty()) {
+                int status = Response.Status.BAD_REQUEST.getStatusCode();
+                for (int i = 0; i < createProductAssignmentsRequestDTO.getProductNames().size(); i++) {
+                    try (Response response = assignmentClient.grantRoleProductAssignments(
+                            createProductAssignmentsRequestDTO.getRoleId(),
+                            mapper.mapRoleProduct(createProductAssignmentsRequestDTO, i))) {
+                        status = response.getStatus();
+                    }
+                }
+                return Response.status(status).build();
+            }
+        }
+
+        // list of product-names
+        if (createProductAssignmentsRequestDTO.getProductNames() != null
+                && !createProductAssignmentsRequestDTO.getProductNames().isEmpty()) {
+            try (Response response = assignmentClient.grantRoleProductsAssignments(
+                    createProductAssignmentsRequestDTO.getRoleId(),
+                    mapper.mapRoleProducts(createProductAssignmentsRequestDTO))) {
+                return Response.status(response.getStatus()).build();
+            }
+        }
+
+        // only role-id defined
+        try (Response response = assignmentClient.grantRoleAssignments(createProductAssignmentsRequestDTO.getRoleId())) {
             return Response.status(response.getStatus()).build();
         }
     }

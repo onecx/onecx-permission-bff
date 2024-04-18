@@ -21,5 +21,12 @@ public interface AssignmentMapper {
 
     RevokeAssignmentRequest map(RevokeAssignmentRequestDTO revokeAssignmentRequestDTO);
 
-    CreateProductAssignmentRequest map(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO);
+    CreateRoleProductsAssignmentRequest mapRoleProducts(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO);
+
+    default CreateRoleProductAssignmentRequest mapRoleProduct(
+            CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO, int productIndex) {
+        return new CreateRoleProductAssignmentRequest()
+                .productName(createProductAssignmentsRequestDTO.getProductNames().get(productIndex))
+                .appId(createProductAssignmentsRequestDTO.getAppId());
+    }
 }
