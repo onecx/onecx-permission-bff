@@ -8,10 +8,10 @@ h| Documentation
 h| Configuration
 h| Version
 
-| quarkus-resteasy-reactive
+| quarkus-rest
 
-| https://quarkus.io/guides/resteasy-reactive[Link]
-| https://github.com/quarkusio/quarkusio.github.io/blob/develop/_generated-doc/latest/config/quarkus-resteasy-reactive.adoc[Link]
+| https://quarkus.io/guides/rest[Link]
+| https://github.com/quarkusio/quarkusio.github.io/blob/develop/_generated-doc/latest/config/quarkus-rest.adoc[Link]
 | 3.9.3
 
 | quarkus-smallrye-openapi
@@ -20,7 +20,7 @@ h| Version
 | https://github.com/quarkusio/quarkusio.github.io/blob/develop/_generated-doc/latest/config/quarkus-smallrye-openapi.adoc[Link]
 | 3.9.3
 
-| quarkus-resteasy-reactive-jackson
+| quarkus-rest-jackson
 
 | https://quarkus.io/guides/rest-json[Link]
 | 
@@ -47,38 +47,38 @@ h| Version
 | tkit-quarkus-log-cdi
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-log-cdi.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-cdi.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-cdi.adoc[Link]
+| 2.22.0
 
 | tkit-quarkus-log-rs
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-log-rs.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-rs.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-rs.adoc[Link]
+| 2.22.0
 
 | tkit-quarkus-log-json
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-log-json.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-json.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-log-json.adoc[Link]
+| 2.22.0
 
 | tkit-quarkus-rest
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-rest.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-rest.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-rest.adoc[Link]
+| 2.22.0
 
 | tkit-quarkus-rest-context
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-rest-context.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-rest-context.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-rest-context.adoc[Link]
+| 2.22.0
 
 | tkit-quarkus-security
 
 | https://1000kit.github.io/tkit-quarkus/current/tkit-quarkus/tkit-quarkus-security.html[Link]
-| https://github.com/1000kit/tkit-quarkus/blob/2.21.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-security.adoc[Link]
-| 2.21.0
+| https://github.com/1000kit/tkit-quarkus/blob/2.22.0/docs/modules/tkit-quarkus/pages/includes/tkit-quarkus-security.adoc[Link]
+| 2.22.0
 
 | quarkus-hibernate-validator
 
@@ -89,8 +89,8 @@ h| Version
 | onecx-permissions
 
 | https://onecx.github.io/docs/onecx-quarkus/current/onecx-quarkus/onecx-permissions.html[Link]
-| https://github.com/onecx/onecx-quarkus/blob/0.16.0/docs/modules/onecx-quarkus/pages/includes/onecx-permissions.adoc[Link]
-| 0.16.0
+| https://github.com/onecx/onecx-quarkus/blob/0.17.0/docs/modules/onecx-quarkus/pages/includes/onecx-permissions.adoc[Link]
+| 0.17.0
 
 | quarkus-oidc
 
@@ -108,7 +108,7 @@ h| Version
 
 | https://onecx.github.io/docs/onecx-quarkus/current/onecx-quarkus/onecx-core.html[Link]
 | 
-| 0.16.0
+| 0.17.0
 
 | quarkus-arc
 
@@ -120,6 +120,11 @@ h| Version
 
 | https://quarkus.io/guides/container-image[Link]
 | https://github.com/quarkusio/quarkusio.github.io/blob/develop/_generated-doc/latest/config/quarkus-container-image-docker.adoc[Link]
+| 3.9.3
+
+
+
+|===us-container-image-docker.adoc[Link]
 | 3.9.3
 
 
