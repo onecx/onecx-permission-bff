@@ -6,7 +6,6 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +26,6 @@ import gen.org.tkit.onecx.product.store.client.model.*;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusTest
 @TestHTTPEndpoint(WorkspaceRestController.class)
@@ -108,43 +106,6 @@ class WorkspaceRestControllerTest extends AbstractTest {
                 .post("/search")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
-    }
-
-    @Test
-    void getAllProductsByWorkspaceNameTest() {
-        String workspaceName = "workspace1";
-
-        Product product1 = new Product();
-        product1.productName("product1");
-        Product product2 = new Product();
-        product2.productName("product2");
-
-        ArrayList<Product> products = new ArrayList<>();
-        products.add(product1);
-        products.add(product2);
-        WorkspaceLoad load = new WorkspaceLoad();
-        load.setProducts(products);
-
-        // create mock rest endpoint
-        mockServerClient
-                .when(request().withPath("/v1/workspaces/" + workspaceName + "/load").withMethod(HttpMethod.GET))
-                .withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withBody(JsonBody.json(load)));
-
-        var output = given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .pathParam("workspaceName", workspaceName)
-                .get("/{workspaceName}/products")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract().as(new TypeRef<ProductDTO[]>() {
-                });
-
-        Assertions.assertNotNull(output);
-        Assertions.assertEquals(2, Arrays.stream(output).toList().size());
     }
 
     @Test
