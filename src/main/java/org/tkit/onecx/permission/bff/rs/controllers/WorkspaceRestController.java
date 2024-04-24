@@ -19,9 +19,7 @@ import gen.org.tkit.onecx.permission.bff.rs.internal.WorkspaceApiService;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceDetailsDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.WorkspaceSearchCriteriaDTO;
 import gen.org.tkit.onecx.permission.client.api.WorkspaceExternalApi;
-import gen.org.tkit.onecx.permission.client.model.Product;
 import gen.org.tkit.onecx.permission.client.model.Workspace;
-import gen.org.tkit.onecx.permission.client.model.WorkspaceLoad;
 import gen.org.tkit.onecx.permission.client.model.WorkspacePageResult;
 import gen.org.tkit.onecx.product.store.client.api.ProductsApi;
 import gen.org.tkit.onecx.product.store.client.model.ProductItemLoadSearchCriteria;
@@ -58,29 +56,25 @@ public class WorkspaceRestController implements WorkspaceApiService {
     public Response getDetailsByWorkspaceName(String workspaceName) {
         try (Response response = workspaceClient.getWorkspaceByName(workspaceName)) {
             WorkspaceDetailsDTO workspaceDetails;
-            List<String> productNames;
+
             List<String> workspaceRoles = new ArrayList<>();
-            ProductsLoadResult productsLoadResult = new ProductsLoadResult();
             var workspaceResponse = response.readEntity(Workspace.class);
             if (workspaceResponse.getWorkspaceRoles() != null) {
-                workspaceRoles = workspaceResponse.getWorkspaceRoles().stream().toList();
+                workspaceRoles = new ArrayList<>(workspaceResponse.getWorkspaceRoles());
             }
 
-            //get products of workspace
-            try (Response wsProductsResponse = workspaceClient.loadWorkspaceByName(workspaceName)) {
-                //list of product names registered in workspace
-                productNames = wsProductsResponse.readEntity(WorkspaceLoad.class).getProducts().stream()
-                        .map(Product::getProductName).toList();
-                if (!productNames.isEmpty()) {
-                    //get mfe and ms for each product by name from product-store
-                    ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
-                    mfeAndMsCriteria.setProductNames(productNames);
-                    try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
-                        productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
-                    }
+            ProductsLoadResult productsLoadResult = new ProductsLoadResult();
+            if (workspaceResponse.getProducts() != null) {
+                //get mfe and ms for each product by name from product-store
+                ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
+                mfeAndMsCriteria.setProductNames(new ArrayList<>(workspaceResponse.getProducts()));
+                try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
+                    productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
                 }
-                workspaceDetails = mapper.map(workspaceRoles, productsLoadResult);
             }
+
+            workspaceDetails = mapper.map(workspaceRoles, productsLoadResult);
+
             return Response.status(Response.Status.OK).entity(workspaceDetails).build();
         }
     }

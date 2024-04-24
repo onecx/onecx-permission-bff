@@ -113,7 +113,8 @@ class WorkspaceRestControllerTest extends AbstractTest {
 
         String workspaceName = "test-workspace";
         Workspace workspace = new Workspace();
-        workspace.name("test-workspace").workspaceRoles(Set.of("role1", "role2"));
+        workspace.name("test-workspace").workspaceRoles(Set.of("role1", "role2"))
+                .products(Set.of("product1", "product2"));
 
         // create mock rest endpoint
         mockServerClient
@@ -121,24 +122,6 @@ class WorkspaceRestControllerTest extends AbstractTest {
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withBody(JsonBody.json(workspace)));
-
-        List<Product> productsOfWorkspace = new ArrayList<>();
-        Product product1 = new Product();
-        product1.productName("product1");
-        Product product2 = new Product();
-        product2.productName("product2");
-        productsOfWorkspace.add(product1);
-        productsOfWorkspace.add(product2);
-
-        WorkspaceLoad loadResponse = new WorkspaceLoad();
-        loadResponse.setName(workspaceName);
-        loadResponse.setProducts(productsOfWorkspace);
-        // create mock rest endpoint
-        mockServerClient
-                .when(request().withPath("/v1/workspaces/" + workspaceName + "/load").withMethod(HttpMethod.GET))
-                .withId("MOCKID2")
-                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
-                        .withBody(JsonBody.json(loadResponse)));
 
         List<String> productNames = List.of("product1", "product2");
         ProductItemLoadSearchCriteria criteria = new ProductItemLoadSearchCriteria();
@@ -201,7 +184,6 @@ class WorkspaceRestControllerTest extends AbstractTest {
         Assertions.assertNotNull(output.getProducts().get(1).getMs().get(0).getAppId());
 
         mockServerClient.clear(MOCKID);
-        mockServerClient.clear("MOCKID2");
         mockServerClient.clear("MOCKID3");
     }
 
