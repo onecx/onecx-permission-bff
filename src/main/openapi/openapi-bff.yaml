@@ -534,31 +534,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkspacePageResult'
-  /workspaces/{workspaceName}/products:
-    get:
-      x-onecx:
-        permissions:
-          workspace:
-            - read
-      tags:
-        - workspace
-      description: get all products by workspace name
-      operationId: getAllProductsByWorkspaceName
-      parameters:
-        - name: workspaceName
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
   /workspaces/{workspaceName}/details:
     get:
       x-onecx:

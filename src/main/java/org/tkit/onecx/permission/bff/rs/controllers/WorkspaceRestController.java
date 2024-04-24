@@ -47,13 +47,6 @@ public class WorkspaceRestController implements WorkspaceApiService {
     ExceptionMapper exceptionMapper;
 
     @Override
-    public Response getAllProductsByWorkspaceName(String workspaceName) {
-        try (Response response = workspaceClient.loadWorkspaceByName(workspaceName)) {
-            return Response.status(response.getStatus()).entity(mapper.map(response.readEntity(WorkspaceLoad.class))).build();
-        }
-    }
-
-    @Override
     public Response searchWorkspaces(WorkspaceSearchCriteriaDTO criteriaDTO) {
         try (Response response = workspaceClient.searchWorkspaces(mapper.map(criteriaDTO))) {
             return Response.status(response.getStatus()).entity(mapper.map(response.readEntity(WorkspacePageResult.class)))
