@@ -593,6 +593,9 @@ components:
           type: string
         description:
           type: string
+        mandatory:
+          type: boolean
+          default: false
     UpdateRoleRequest:
       type: object
       required:
@@ -751,6 +754,9 @@ components:
           type: string
         description:
           type: string
+        mandatory:
+          type: boolean
+          default: false
     CreatePermissionRequest:
       type: object
       properties:
@@ -880,6 +886,9 @@ components:
           type: string
         id:
           type: string
+        mandatory:
+          type: boolean
+          default: false
     ApplicationSearchCriteria:
       type: object
       properties:
