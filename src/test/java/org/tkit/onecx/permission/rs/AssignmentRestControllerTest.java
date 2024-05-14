@@ -330,4 +330,73 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
+
+    @Test
+    void grantRoleAssignments_Test() {
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role123").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode()));
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .pathParam("roleId", "role123")
+                .post("/grant/{roleId}")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+    }
+
+    @Test
+    void grantRoleProductAssignments_Test() {
+
+        CreateRoleProductAssignmentRequest request = new CreateRoleProductAssignmentRequest();
+        request.setAppId("app1");
+        request.setProductName("product1");
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role123/product").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(request)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode()));
+
+        CreateRoleProductAssignmentRequestDTO requestDTO = new CreateRoleProductAssignmentRequestDTO();
+        requestDTO.setAppId("app1");
+        requestDTO.setProductName("product1");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .pathParam("roleId", "role123")
+                .post("/grant/{roleId}/product")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+    }
+
+    @Test
+    void grantRoleProductsAssignments_Test() {
+
+        CreateRoleProductsAssignmentRequest request = new CreateRoleProductsAssignmentRequest();
+        request.setProductNames(List.of("product1", "product2", "product3"));
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/grant/role123/products").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode()));
+
+        CreateRoleProductsAssignmentRequestDTO requestDTO = new CreateRoleProductsAssignmentRequestDTO();
+        requestDTO.setProductNames(List.of("product1", "product2", "product3"));
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .pathParam("roleId", "role123")
+                .post("/grant/{roleId}/products")
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode());
+    }
 }

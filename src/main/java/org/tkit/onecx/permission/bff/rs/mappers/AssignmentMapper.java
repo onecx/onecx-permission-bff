@@ -29,4 +29,8 @@ public interface AssignmentMapper {
                 .productName(createProductAssignmentsRequestDTO.getProductNames().get(productIndex))
                 .appId(createProductAssignmentsRequestDTO.getAppId());
     }
+
+    CreateRoleProductAssignmentRequest map(CreateRoleProductAssignmentRequestDTO createRoleProductAssignmentRequestDTO);
+
+    CreateRoleProductsAssignmentRequest map(CreateRoleProductsAssignmentRequestDTO createRoleProductsAssignmentRequestDTO);
 }

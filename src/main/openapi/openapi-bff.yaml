@@ -414,6 +414,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
+  /assignments/grant/{roleId}:
+    post:
+      tags:
+        - assignment
+      description: Create new assignments for role
+      operationId: grantRoleAssignments
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: New assignment created
+        404:
+          description: Data not found
+  /assignments/grant/{roleId}/product:
+    post:
+      tags:
+        - assignment
+      description: Create new assignments for role and product
+      operationId: grantRoleProductAssignments
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoleProductAssignmentRequest'
+      responses:
+        201:
+          description: New assignment created
+        404:
+          description: Data not found
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /assignments/grant/{roleId}/products:
+    post:
+      tags:
+        - assignment
+      description: Create new assignments for role and products
+      operationId: grantRoleProductsAssignments
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoleProductsAssignmentRequest'
+      responses:
+        201:
+          description: New assignment created
+        404:
+          description: Data not found
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /assignments/revoke:
     post:
       x-onecx:
@@ -1048,6 +1123,26 @@ components:
         appName:
           type: string
         appId:
+          type: string
+    CreateRoleProductsAssignmentRequest:
+      type: object
+      required:
+        - productNames
+      properties:
+        productNames:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    CreateRoleProductAssignmentRequest:
+      type: object
+      required:
+        - productName
+        - appId
+      properties:
+        appId:
+          type: string
+        productName:
           type: string
     OffsetDateTime:
       format: date-time
