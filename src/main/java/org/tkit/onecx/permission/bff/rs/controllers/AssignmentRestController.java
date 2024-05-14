@@ -47,7 +47,7 @@ public class AssignmentRestController implements AssignmentApiService {
     @Override
     public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
 
-        //!!! This is workaround for current UI
+        //!! This is workaround for current UI
 
         // app-id not null, take only first product from list
         if (createProductAssignmentsRequestDTO.getAppId() != null && !createProductAssignmentsRequestDTO.getAppId().isEmpty()) {
