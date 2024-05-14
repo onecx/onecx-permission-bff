@@ -47,7 +47,7 @@ public class AssignmentRestController implements AssignmentApiService {
     @Override
     public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
 
-        //!!! This is workaround for current UI
+        //!! This is workaround for current UI
 
         // app-id not null, take only first product from list
         if (createProductAssignmentsRequestDTO.getAppId() != null && !createProductAssignmentsRequestDTO.getAppId().isEmpty()) {
@@ -66,6 +66,31 @@ public class AssignmentRestController implements AssignmentApiService {
         try (Response response = assignmentClient.grantRoleProductsAssignments(
                 createProductAssignmentsRequestDTO.getRoleId(),
                 mapper.mapRoleProducts(createProductAssignmentsRequestDTO))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response grantRoleAssignments(String roleId) {
+        try (Response response = assignmentClient.grantRoleAssignments(roleId)) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response grantRoleProductAssignments(String roleId,
+            CreateRoleProductAssignmentRequestDTO createRoleProductAssignmentRequestDTO) {
+        try (Response response = assignmentClient.grantRoleProductAssignments(roleId,
+                mapper.map(createRoleProductAssignmentRequestDTO))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response grantRoleProductsAssignments(String roleId,
+            CreateRoleProductsAssignmentRequestDTO createRoleProductsAssignmentRequestDTO) {
+        try (Response response = assignmentClient.grantRoleProductsAssignments(roleId,
+                mapper.map(createRoleProductsAssignmentRequestDTO))) {
             return Response.status(response.getStatus()).build();
         }
     }
