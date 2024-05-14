@@ -45,7 +45,6 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
-    @Deprecated
     public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
 
         //!!! This is workaround for current UI
