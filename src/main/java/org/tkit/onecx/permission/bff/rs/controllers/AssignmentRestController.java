@@ -45,32 +45,6 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
-    public Response grantAssignments(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO) {
-
-        //!! This is workaround for current UI
-
-        // app-id not null, take only first product from list
-        if (createProductAssignmentsRequestDTO.getAppId() != null && !createProductAssignmentsRequestDTO.getAppId().isEmpty()) {
-            int status = Response.Status.BAD_REQUEST.getStatusCode();
-            for (int i = 0; i < createProductAssignmentsRequestDTO.getProductNames().size(); i++) {
-                try (Response response = assignmentClient.grantRoleProductAssignments(
-                        createProductAssignmentsRequestDTO.getRoleId(),
-                        mapper.mapRoleProduct(createProductAssignmentsRequestDTO, i))) {
-                    status = response.getStatus();
-                }
-            }
-            return Response.status(status).build();
-        }
-
-        // list of product-names
-        try (Response response = assignmentClient.grantRoleProductsAssignments(
-                createProductAssignmentsRequestDTO.getRoleId(),
-                mapper.mapRoleProducts(createProductAssignmentsRequestDTO))) {
-            return Response.status(response.getStatus()).build();
-        }
-    }
-
-    @Override
     public Response grantRoleAssignments(String roleId) {
         try (Response response = assignmentClient.grantRoleAssignments(roleId)) {
             return Response.status(response.getStatus()).build();
@@ -78,10 +52,10 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
-    public Response grantRoleProductAssignments(String roleId,
-            CreateRoleProductAssignmentRequestDTO createRoleProductAssignmentRequestDTO) {
-        try (Response response = assignmentClient.grantRoleProductAssignments(roleId,
-                mapper.map(createRoleProductAssignmentRequestDTO))) {
+    public Response grantRoleApplicationAssignments(String roleId,
+            CreateRoleApplicationAssignmentRequestDTO createRoleApplicationAssignmentRequestDTO) {
+        try (Response response = assignmentClient.grantRoleApplicationAssignments(roleId,
+                mapper.map(createRoleApplicationAssignmentRequestDTO))) {
             return Response.status(response.getStatus()).build();
         }
     }
@@ -91,6 +65,31 @@ public class AssignmentRestController implements AssignmentApiService {
             CreateRoleProductsAssignmentRequestDTO createRoleProductsAssignmentRequestDTO) {
         try (Response response = assignmentClient.grantRoleProductsAssignments(roleId,
                 mapper.map(createRoleProductsAssignmentRequestDTO))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response revokeRoleApplicationAssignments(String roleId,
+            RevokeRoleApplicationAssignmentRequestDTO revokeRoleApplicationAssignmentRequestDTO) {
+        try (Response response = assignmentClient.revokeRoleApplicationAssignments(roleId,
+                mapper.map(revokeRoleApplicationAssignmentRequestDTO))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response revokeRoleAssignments(String roleId) {
+        try (Response response = assignmentClient.revokeRoleAssignments(roleId)) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response revokeRoleProductsAssignments(String roleId,
+            RevokeRoleProductsAssignmentRequestDTO revokeRoleProductsAssignmentRequestDTO) {
+        try (Response response = assignmentClient.revokeRoleProductsAssignments(roleId,
+                mapper.map(revokeRoleProductsAssignmentRequestDTO))) {
             return Response.status(response.getStatus()).build();
         }
     }
@@ -107,13 +106,6 @@ public class AssignmentRestController implements AssignmentApiService {
         try (Response response = assignmentClient.getAssignment(id)) {
             AssignmentDTO responseDTO = mapper.map(response.readEntity(Assignment.class));
             return Response.status(response.getStatus()).entity(responseDTO).build();
-        }
-    }
-
-    @Override
-    public Response revokeAssignments(RevokeAssignmentRequestDTO revokeAssignmentRequestDTO) {
-        try (Response response = assignmentClient.revokeAssignments(mapper.map(revokeAssignmentRequestDTO))) {
-            return Response.status(response.getStatus()).build();
         }
     }
 

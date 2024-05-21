@@ -19,8 +19,6 @@ public interface AssignmentMapper {
     @Mapping(target = "removeStreamItem", ignore = true)
     AssignmentPageResultDTO map(AssignmentPageResult pageResult);
 
-    RevokeAssignmentRequest map(RevokeAssignmentRequestDTO revokeAssignmentRequestDTO);
-
     CreateRoleProductsAssignmentRequest mapRoleProducts(CreateProductAssignmentsRequestDTO createProductAssignmentsRequestDTO);
 
     default CreateRoleProductAssignmentRequest mapRoleProduct(
@@ -30,7 +28,11 @@ public interface AssignmentMapper {
                 .appId(createProductAssignmentsRequestDTO.getAppId());
     }
 
-    CreateRoleProductAssignmentRequest map(CreateRoleProductAssignmentRequestDTO createRoleProductAssignmentRequestDTO);
+    CreateRoleProductAssignmentRequest map(CreateRoleApplicationAssignmentRequestDTO createRoleProductAssignmentRequestDTO);
 
     CreateRoleProductsAssignmentRequest map(CreateRoleProductsAssignmentRequestDTO createRoleProductsAssignmentRequestDTO);
+
+    RevokeRoleProductAssignmentRequest map(RevokeRoleApplicationAssignmentRequestDTO revokeRoleApplicationAssignmentRequestDTO);
+
+    RevokeRoleProductsAssignmentRequest map(RevokeRoleProductsAssignmentRequestDTO revokeRoleProductsAssignmentRequestDTO);
 }

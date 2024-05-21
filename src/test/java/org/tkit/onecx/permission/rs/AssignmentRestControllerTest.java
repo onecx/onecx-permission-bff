@@ -250,88 +250,6 @@ class AssignmentRestControllerTest extends AbstractTest {
     }
 
     @Test
-    void createProductAssignmentsTest() {
-
-        CreateRoleProductsAssignmentRequest request = new CreateRoleProductsAssignmentRequest();
-        request.setProductNames(List.of("product1"));
-
-        // create mock rest endpoint
-        mockServerClient.when(request().withPath("/internal/assignments/grant/role1/products").withMethod(HttpMethod.POST)
-                .withBody(JsonBody.json(request)))
-                .withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
-                        .withContentType(MediaType.APPLICATION_JSON));
-
-        CreateProductAssignmentsRequestDTO requestDTO = new CreateProductAssignmentsRequestDTO();
-        requestDTO.setRoleId("role1");
-        requestDTO.setProductNames(List.of("product1"));
-        given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(requestDTO)
-                .post("/grant")
-                .then()
-                .statusCode(Response.Status.CREATED.getStatusCode());
-
-        requestDTO.setAppId("");
-        given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(requestDTO)
-                .post("/grant")
-                .then()
-                .statusCode(Response.Status.CREATED.getStatusCode());
-
-        mockServerClient.when(request().withPath("/internal/assignments/grant/role1/product").withMethod(HttpMethod.POST))
-                .withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode())
-                        .withContentType(MediaType.APPLICATION_JSON));
-
-        requestDTO.setAppId("app1");
-        given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(requestDTO)
-                .post("/grant")
-                .then()
-                .statusCode(Response.Status.CREATED.getStatusCode());
-
-    }
-
-    @Test
-    void revokeAssignmentsTest() {
-        RevokeAssignmentRequest request = new RevokeAssignmentRequest();
-        request.setRoleId("role1");
-        request.setProductNames(List.of("product1"));
-
-        // create mock rest endpoint
-        mockServerClient.when(request().withPath("/internal/assignments/revoke").withMethod(HttpMethod.POST)
-                .withBody(JsonBody.json(request)))
-                .withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode())
-                        .withContentType(MediaType.APPLICATION_JSON));
-
-        RevokeAssignmentRequestDTO requestDTO = new RevokeAssignmentRequestDTO();
-        requestDTO.setRoleId("role1");
-        requestDTO.setProductNames(List.of("product1"));
-        given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .body(requestDTO)
-                .post("/revoke")
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
-    }
-
-    @Test
     void grantRoleAssignments_Test() {
         // create mock rest endpoint
         mockServerClient.when(request().withPath("/internal/assignments/grant/role123").withMethod(HttpMethod.POST))
@@ -349,7 +267,7 @@ class AssignmentRestControllerTest extends AbstractTest {
     }
 
     @Test
-    void grantRoleProductAssignments_Test() {
+    void grantRoleApplicationAssignments_Test() {
 
         CreateRoleProductAssignmentRequest request = new CreateRoleProductAssignmentRequest();
         request.setAppId("app1");
@@ -360,7 +278,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.CREATED.getStatusCode()));
 
-        CreateRoleProductAssignmentRequestDTO requestDTO = new CreateRoleProductAssignmentRequestDTO();
+        CreateRoleApplicationAssignmentRequestDTO requestDTO = new CreateRoleApplicationAssignmentRequestDTO();
         requestDTO.setAppId("app1");
         requestDTO.setProductName("product1");
         given()
@@ -370,7 +288,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .body(requestDTO)
                 .pathParam("roleId", "role123")
-                .post("/grant/{roleId}/product")
+                .post("/grant/{roleId}/application")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode());
     }
@@ -398,5 +316,74 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .post("/grant/{roleId}/products")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode());
+    }
+
+    @Test
+    void revokeRoleAssignments_Test() {
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/revoke/role123").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode()));
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .pathParam("roleId", "role123")
+                .post("/revoke/{roleId}")
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    void revokeRoleApplicationAssignments_Test() {
+
+        RevokeRoleProductAssignmentRequest request = new RevokeRoleProductAssignmentRequest();
+        request.setAppId("app1");
+        request.setProductName("product1");
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/revoke/role123/product").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(request)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode()));
+
+        RevokeRoleApplicationAssignmentRequestDTO requestDTO = new RevokeRoleApplicationAssignmentRequestDTO();
+        requestDTO.setAppId("app1");
+        requestDTO.setProductName("product1");
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .pathParam("roleId", "role123")
+                .post("/revoke/{roleId}/application")
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    void revokeRoleProductsAssignments_Test() {
+
+        RevokeRoleProductsAssignmentRequest request = new RevokeRoleProductsAssignmentRequest();
+        request.setProductNames(List.of("product1", "product2", "product3"));
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/revoke/role123/products").withMethod(HttpMethod.POST))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode()));
+
+        RevokeRoleProductsAssignmentRequestDTO requestDTO = new RevokeRoleProductsAssignmentRequestDTO();
+        requestDTO.setProductNames(List.of("product1", "product2", "product3"));
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .pathParam("roleId", "role123")
+                .post("/revoke/{roleId}/products")
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 }
