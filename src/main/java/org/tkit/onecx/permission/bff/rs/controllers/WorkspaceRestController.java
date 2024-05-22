@@ -67,7 +67,9 @@ public class WorkspaceRestController implements WorkspaceApiService {
             if (workspaceResponse.getProducts() != null) {
                 //get mfe and ms for each product by name from product-store
                 ProductItemLoadSearchCriteria mfeAndMsCriteria = new ProductItemLoadSearchCriteria();
+                mfeAndMsCriteria.setPageSize(workspaceResponse.getProducts().size());
                 mfeAndMsCriteria.setProductNames(new ArrayList<>(workspaceResponse.getProducts()));
+
                 try (Response productStoreResponse = productStoreClient.loadProductsByCriteria(mfeAndMsCriteria)) {
                     productsLoadResult = productStoreResponse.readEntity(ProductsLoadResult.class);
                 }

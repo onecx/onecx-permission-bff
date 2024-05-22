@@ -126,6 +126,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
         List<String> productNames = List.of("product1", "product2");
         ProductItemLoadSearchCriteria criteria = new ProductItemLoadSearchCriteria();
         criteria.setProductNames(productNames);
+        criteria.setPageSize(productNames.size());
 
         ProductsLoadResult result = new ProductsLoadResult();
 
