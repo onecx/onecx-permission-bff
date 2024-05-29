@@ -1,5 +1,7 @@
 package org.tkit.onecx.permission.bff.rs.mappers;
 
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +20,7 @@ import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailInvalidParamDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailParamDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailResponseDTO;
+import gen.org.tkit.onecx.permission.model.ProblemDetailResponse;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public interface ExceptionMapper {
@@ -63,7 +66,17 @@ public interface ExceptionMapper {
         if (ex.getResponse().getStatus() == 500) {
             return Response.status(400).build();
         } else {
-            return Response.status(ex.getResponse().getStatus()).build();
+            if (ex.getResponse().getMediaType() != null
+                    && ex.getResponse().getMediaType().toString().contains(APPLICATION_JSON)) {
+                return Response.status(ex.getResponse().getStatus())
+                        .entity(map(ex.getResponse().readEntity(ProblemDetailResponse.class))).build();
+            } else {
+                return Response.status(ex.getResponse().getStatus()).build();
+            }
         }
     }
+
+    @Mapping(target = "removeParamsItem", ignore = true)
+    @Mapping(target = "removeInvalidParamsItem", ignore = true)
+    ProblemDetailResponseDTO map(ProblemDetailResponse problemDetailResponse);
 }
