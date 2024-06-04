@@ -1,6 +1,9 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -32,12 +35,17 @@ public class UserRestController implements UserApiService {
     @RestClient
     PermissionInternalApi permissionClient;
 
+    @Inject
+    HttpHeaders headers;
+
     @Override
     public Response getUserRolesAndPermissions(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO) {
         UserRolesAndPermissionsPageResultDTO resultDTO;
-        try (Response roleResponse = roleClient.getUserRoles(userMapper.mapRoleRequest(userRolesAndPermissionsCriteriaDTO))) {
+        var token = headers.getRequestHeader(AUTHORIZATION).get(0);
+        try (Response roleResponse = roleClient
+                .getUserRoles(userMapper.mapRoleRequest(userRolesAndPermissionsCriteriaDTO, token))) {
             try (Response permissionResponse = permissionClient
-                    .getUsersPermissions(userMapper.mapPermissionRequest(userRolesAndPermissionsCriteriaDTO))) {
+                    .getUsersPermissions(userMapper.mapPermissionRequest(userRolesAndPermissionsCriteriaDTO, token))) {
                 resultDTO = userMapper.map(roleResponse.readEntity(RolePageResult.class),
                         permissionResponse.readEntity(PermissionPageResult.class));
             }

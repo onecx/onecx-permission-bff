@@ -16,13 +16,13 @@ import gen.org.tkit.onecx.permission.client.model.RoleRequest;
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public interface UserMapper {
 
-    @Mapping(target = "pageSize", source = "rolesPageSize")
-    @Mapping(target = "pageNumber", source = "rolesPageNumber")
-    RoleRequest mapRoleRequest(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO);
+    @Mapping(target = "pageSize", source = "userRolesAndPermissionsCriteriaDTO.rolesPageSize")
+    @Mapping(target = "pageNumber", source = "userRolesAndPermissionsCriteriaDTO.rolesPageNumber")
+    RoleRequest mapRoleRequest(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO, String token);
 
-    @Mapping(target = "pageSize", source = "permissionsPageSize")
-    @Mapping(target = "pageNumber", source = "permissionsPageNumber")
-    PermissionRequest mapPermissionRequest(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO);
+    @Mapping(target = "pageSize", source = "userRolesAndPermissionsCriteriaDTO.permissionsPageSize")
+    @Mapping(target = "pageNumber", source = "userRolesAndPermissionsCriteriaDTO.permissionsPageNumber")
+    PermissionRequest mapPermissionRequest(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO, String token);
 
     @Mapping(target = "roles", source = "rolePageResult")
     @Mapping(target = "permissions", source = "permissionPageResult")

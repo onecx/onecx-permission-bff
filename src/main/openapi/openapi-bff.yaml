@@ -684,11 +684,7 @@ components:
   schemas:
     UserRolesAndPermissionsCriteria:
       type: object
-      required:
-        - token
       properties:
-        token:
-          type: string
         rolesPageNumber:
           format: int32
           description: The number of page.

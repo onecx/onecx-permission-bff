@@ -31,9 +31,11 @@ class UserRestControllerTest extends AbstractTest {
     @InjectMockServerClient
     MockServerClient mockServerClient;
 
+    final String TOKEN = keycloakClient.getAccessToken(ADMIN);
+
     @Test
     void getUserRolesAndPermissions() {
-        var testToken = "someToken";
+        var testToken = "Bearer " + TOKEN;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -63,11 +65,10 @@ class UserRestControllerTest extends AbstractTest {
         criteriaDTO.setPermissionsPageSize(5);
         criteriaDTO.setRolesPageNumber(0);
         criteriaDTO.setRolesPageSize(5);
-        criteriaDTO.setToken(testToken);
 
         var output = given()
                 .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .auth().oauth2(TOKEN)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -87,7 +88,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserRolesAndPermissions_BAD_REQUEST() {
-        var testToken = "someToken";
+        var testToken = "Bearer " + TOKEN;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -111,11 +112,10 @@ class UserRestControllerTest extends AbstractTest {
         criteriaDTO.setPermissionsPageSize(5);
         criteriaDTO.setRolesPageNumber(0);
         criteriaDTO.setRolesPageSize(5);
-        criteriaDTO.setToken(testToken);
 
         var output = given()
                 .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .auth().oauth2(TOKEN)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
