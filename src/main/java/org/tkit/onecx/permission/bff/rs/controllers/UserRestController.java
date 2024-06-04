@@ -41,7 +41,7 @@ public class UserRestController implements UserApiService {
     @Override
     public Response getUserRolesAndPermissions(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO) {
         UserRolesAndPermissionsPageResultDTO resultDTO;
-        var token = headers.getRequestHeader(AUTHORIZATION).get(0);
+        var token = headers.getHeaderString(AUTHORIZATION);
         try (Response roleResponse = roleClient
                 .getUserRoles(userMapper.mapRoleRequest(userRolesAndPermissionsCriteriaDTO, token))) {
             try (Response permissionResponse = permissionClient
