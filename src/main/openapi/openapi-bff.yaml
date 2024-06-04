@@ -464,7 +464,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  #
   /assignments/revoke/{roleId}:
     post:
       tags:
@@ -658,8 +657,97 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkspaceDetails'
+  /user/me:
+    post:
+      x-onecx:
+        permissions:
+          permission:
+            - read
+      tags:
+        - user
+      description: get user roles and permissions
+      operationId: getUserRolesAndPermissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRolesAndPermissionsCriteria'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRolesAndPermissionsPageResult'
 components:
   schemas:
+    UserRolesAndPermissionsCriteria:
+      type: object
+      properties:
+        rolesPageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        rolesPageSize:
+          format: int32
+          description: The size of page
+          default: 100
+          type: integer
+        permissionsPageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        permissionsPageSize:
+          format: int32
+          description: The size of page
+          default: 100
+          type: integer
+    UserRolesAndPermissionsPageResult:
+      type: object
+      properties:
+        roles:
+          type: object
+          properties:
+            totalElements:
+              format: int64
+              description: The total elements in the resource.
+              type: integer
+            number:
+              format: int32
+              type: integer
+            size:
+              format: int32
+              type: integer
+            totalPages:
+              format: int64
+              type: integer
+            stream:
+              type: array
+              items:
+                $ref: '#/components/schemas/Role'
+        permissions:
+          type: object
+          properties:
+            totalElements:
+              format: int64
+              description: The total elements in the resource.
+              type: integer
+            number:
+              format: int32
+              type: integer
+            size:
+              format: int32
+              type: integer
+            totalPages:
+              format: int64
+              type: integer
+            stream:
+              type: array
+              items:
+                $ref: '#/components/schemas/Permission'
     CreateRolesRequest:
       type: object
       properties:

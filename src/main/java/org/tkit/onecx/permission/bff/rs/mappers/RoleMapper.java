@@ -26,4 +26,5 @@ public interface RoleMapper {
 
     @Mapping(target = "removeStreamItem", ignore = true)
     IAMRolePageResultDTO map(RolePageResultIamV1 pageResultIamV1);
+
 }
