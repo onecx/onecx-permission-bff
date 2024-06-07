@@ -13,12 +13,13 @@ import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.UserMapper;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.UserApiService;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.UserRolesAndPermissionsCriteriaDTO;
-import gen.org.tkit.onecx.permission.bff.rs.internal.model.UserRolesAndPermissionsPageResultDTO;
+import gen.org.tkit.onecx.permission.bff.rs.internal.model.UserCriteriaDTO;
+import gen.org.tkit.onecx.permission.client.api.AssignmentInternalApi;
 import gen.org.tkit.onecx.permission.client.api.PermissionInternalApi;
 import gen.org.tkit.onecx.permission.client.api.RoleInternalApi;
 import gen.org.tkit.onecx.permission.client.model.PermissionPageResult;
 import gen.org.tkit.onecx.permission.client.model.RolePageResult;
+import gen.org.tkit.onecx.permission.client.model.UserAssignmentPageResult;
 
 public class UserRestController implements UserApiService {
 
@@ -36,21 +37,40 @@ public class UserRestController implements UserApiService {
     PermissionInternalApi permissionClient;
 
     @Inject
+    @RestClient
+    AssignmentInternalApi assignmentClient;
+
+    @Inject
     HttpHeaders headers;
 
     @Override
-    public Response getUserRolesAndPermissions(UserRolesAndPermissionsCriteriaDTO userRolesAndPermissionsCriteriaDTO) {
-        UserRolesAndPermissionsPageResultDTO resultDTO;
+    public Response getUserRoles(UserCriteriaDTO userCriteriaDTO) {
         var token = headers.getHeaderString(AUTHORIZATION);
         try (Response roleResponse = roleClient
-                .getUserRoles(userMapper.mapRoleRequest(userRolesAndPermissionsCriteriaDTO, token))) {
-            try (Response permissionResponse = permissionClient
-                    .getUsersPermissions(userMapper.mapPermissionRequest(userRolesAndPermissionsCriteriaDTO, token))) {
-                resultDTO = userMapper.map(roleResponse.readEntity(RolePageResult.class),
-                        permissionResponse.readEntity(PermissionPageResult.class));
-            }
+                .getUserRoles(userMapper.mapUserRoleRequest(userCriteriaDTO, token))) {
+            return Response.status(Response.Status.OK)
+                    .entity(userMapper.map(roleResponse.readEntity(RolePageResult.class))).build();
         }
-        return Response.status(Response.Status.OK).entity(resultDTO).build();
+    }
+
+    @Override
+    public Response getUserPermissions(UserCriteriaDTO userCriteriaDTO) {
+        var token = headers.getHeaderString(AUTHORIZATION);
+        try (Response permissionResponse = permissionClient
+                .getUsersPermissions(userMapper.mapUserPermissionRequest(userCriteriaDTO, token))) {
+            return Response.status(Response.Status.OK).entity(userMapper.map(
+                    permissionResponse.readEntity(PermissionPageResult.class))).build();
+        }
+    }
+
+    @Override
+    public Response getUserAssignments(UserCriteriaDTO userCriteriaDTO) {
+        var token = headers.getHeaderString(AUTHORIZATION);
+        try (Response assignmentResponse = assignmentClient
+                .getUserAssignments(userMapper.mapUserAssignmentRequest(userCriteriaDTO, token))) {
+            return Response.status(Response.Status.OK).entity(userMapper.map(
+                    assignmentResponse.readEntity(UserAssignmentPageResult.class))).build();
+        }
     }
 
     @ServerExceptionMapper
