@@ -45,6 +45,7 @@
         <dependency>
             <groupId>org.tkit.quarkus.lib</groupId>
             <artifactId>tkit-quarkus-log-rs</artifactId>
+            <version>2.25.0</version>
         </dependency>
         <dependency>
             <groupId>org.tkit.quarkus.lib</groupId>
