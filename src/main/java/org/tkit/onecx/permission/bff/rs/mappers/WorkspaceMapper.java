@@ -8,8 +8,6 @@ import org.mapstruct.Mapping;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
-import gen.org.tkit.onecx.permission.client.model.Product;
-import gen.org.tkit.onecx.permission.client.model.WorkspaceLoad;
 import gen.org.tkit.onecx.permission.client.model.WorkspacePageResult;
 import gen.org.tkit.onecx.permission.client.model.WorkspaceSearchCriteria;
 import gen.org.tkit.onecx.product.store.client.model.ProductsAbstract;
@@ -17,16 +15,6 @@ import gen.org.tkit.onecx.product.store.client.model.ProductsLoadResult;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public interface WorkspaceMapper {
-
-    @Mapping(source = "products", target = ".")
-    default List<ProductDTO> map(WorkspaceLoad load) {
-        return mapProductList(load.getProducts());
-    }
-
-    List<ProductDTO> mapProductList(List<Product> list);
-
-    @Mapping(target = "removeMicrofrontendsItem", ignore = true)
-    ProductDTO map(Product product);
 
     @Mapping(target = "removeMsItem", ignore = true)
     @Mapping(target = "removeMfeItem", ignore = true)
