@@ -30,11 +30,11 @@ class UserRestControllerTest extends AbstractTest {
     @InjectMockServerClient
     MockServerClient mockServerClient;
 
-    final String TOKEN = keycloakClient.getAccessToken(ADMIN);
+    final String token = keycloakClient.getAccessToken(ADMIN);
 
     @Test
     void getUserRoles() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -53,7 +53,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -70,7 +70,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserPermissions() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
 
         PermissionRequest permissionRequest = new PermissionRequest();
         permissionRequest.pageNumber(0).pageSize(5).token(testToken);
@@ -90,7 +90,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -107,7 +107,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserAssignments() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
         AssignmentRequest assignmentRequest = new AssignmentRequest();
         assignmentRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -126,7 +126,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -143,7 +143,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserRoles_BAD_REQUEST() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -159,7 +159,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -174,7 +174,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserPermissions_BAD_REQUEST() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
 
         PermissionRequest permissionRequest = new PermissionRequest();
         permissionRequest.pageNumber(0).pageSize(5).token(testToken);
@@ -191,7 +191,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
@@ -205,7 +205,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserAssignments_BAD_REQUEST() {
-        var testToken = "Bearer " + TOKEN;
+        var testToken = "Bearer " + token;
         AssignmentRequest assignmentRequest = new AssignmentRequest();
         assignmentRequest.pageNumber(0).pageSize(5).token(testToken);
 
@@ -221,7 +221,7 @@ class UserRestControllerTest extends AbstractTest {
 
         var output = given()
                 .when()
-                .auth().oauth2(TOKEN)
+                .auth().oauth2(token)
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
