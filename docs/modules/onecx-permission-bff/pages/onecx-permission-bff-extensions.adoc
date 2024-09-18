@@ -23,7 +23,6 @@ h| Version
 | quarkus-rest-jackson
 
 | https://quarkus.io/guides/rest-json[Link]
-| 
 | 3.14.4
 
 | quarkus-smallrye-health
@@ -41,7 +40,6 @@ h| Version
 | quarkus-rest-client-jackson
 
 | https://quarkus.io/guides/rest-client[Link]
-| 
 | 3.14.4
 
 | tkit-quarkus-log-cdi
