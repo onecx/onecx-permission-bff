@@ -425,8 +425,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .extract().as(AssignmentSnapshot.class);
 
         Assertions.assertNotNull(output);
-        Assertions.assertEquals(output.getAssignments().get("product1").get("app1").get("role1").get("resource1").size(),
-                2);
+        Assertions.assertEquals(2, output.getAssignments().get("product1").get("app1").get("role1").get("resource1").size());
         mockServerClient.clear("MOCK_ID");
     }
 
