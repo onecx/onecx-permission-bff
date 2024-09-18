@@ -6,6 +6,8 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.Response;
@@ -19,6 +21,8 @@ import org.tkit.onecx.permission.bff.rs.controllers.AssignmentRestController;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
+import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
+import gen.org.tkit.onecx.permission.exim.client.model.ExportAssignmentsRequest;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -385,5 +389,75 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .post("/revoke/{roleId}/products")
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    void exportAssignmentsTest() {
+
+        ExportAssignmentsRequest request = new ExportAssignmentsRequest();
+        request.setProductNames(Set.of("product1"));
+
+        AssignmentSnapshot snapshot = new AssignmentSnapshot();
+        snapshot.setAssignments(Map.of("product1",
+                Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/exim/v1/assignments/export").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(request)))
+                .withId("MOCK_ID")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(snapshot)));
+
+        ExportAssignmentsRequestDTO requestDTO = new ExportAssignmentsRequestDTO();
+        requestDTO.setProductNames(Set.of("product1"));
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(requestDTO)
+                .post("/export")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(AssignmentSnapshot.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(output.getAssignments().get("product1").get("app1").get("role1").get("resource1").size(),
+                2);
+        mockServerClient.clear("MOCK_ID");
+    }
+
+    @Test
+    void importAssignmentsTest() {
+        AssignmentSnapshot assignmentSnapshot = new AssignmentSnapshot();
+        assignmentSnapshot.setAssignments(Map.of("product1",
+                Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/exim/v1/assignments/import").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(assignmentSnapshot)))
+                .withId("MOCK_ID")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode()));
+
+        AssignmentSnapshot assignmentSnapshotDTO = new AssignmentSnapshot();
+        assignmentSnapshotDTO.setAssignments(Map.of("product1",
+                Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(assignmentSnapshotDTO)
+                .post("/import")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode());
+
+        Assertions.assertNotNull(output);
+        mockServerClient.clear("MOCK_ID");
+
     }
 }

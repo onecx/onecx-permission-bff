@@ -19,6 +19,8 @@ import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.api.AssignmentInternalApi;
 import gen.org.tkit.onecx.permission.client.model.Assignment;
 import gen.org.tkit.onecx.permission.client.model.AssignmentPageResult;
+import gen.org.tkit.onecx.permission.exim.client.api.PermissionExportImportApi;
+import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
 
 @ApplicationScoped
 @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
@@ -28,6 +30,10 @@ public class AssignmentRestController implements AssignmentApiService {
     @RestClient
     @Inject
     AssignmentInternalApi assignmentClient;
+
+    @RestClient
+    @Inject
+    PermissionExportImportApi assignmentEximClient;
 
     @Inject
     AssignmentMapper mapper;
@@ -70,6 +76,13 @@ public class AssignmentRestController implements AssignmentApiService {
     }
 
     @Override
+    public Response importAssignments(Object dto) {
+        try (Response response = assignmentEximClient.importAssignments(mapper.createSnapshot(dto))) {
+            return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
     public Response revokeRoleApplicationAssignments(String roleId,
             RevokeRoleApplicationAssignmentRequestDTO revokeRoleApplicationAssignmentRequestDTO) {
         try (Response response = assignmentClient.revokeRoleApplicationAssignments(roleId,
@@ -98,6 +111,15 @@ public class AssignmentRestController implements AssignmentApiService {
     public Response deleteAssignment(String id) {
         try (Response response = assignmentClient.deleteAssignment(id)) {
             return Response.status(response.getStatus()).build();
+        }
+    }
+
+    @Override
+    public Response exportAssignments(ExportAssignmentsRequestDTO exportAssignmentsRequestDTO) {
+        try (Response response = assignmentEximClient.exportAssignments(mapper.map(exportAssignmentsRequestDTO))) {
+            return Response.status(response.getStatus())
+                    .entity(response.readEntity(AssignmentSnapshot.class))
+                    .build();
         }
     }
 
