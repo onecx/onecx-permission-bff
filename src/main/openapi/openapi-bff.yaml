@@ -1190,6 +1190,8 @@ components:
           type: string
         appId:
           type: string
+        productName:
+          type: string
         id:
           type: string
         mandatory:
