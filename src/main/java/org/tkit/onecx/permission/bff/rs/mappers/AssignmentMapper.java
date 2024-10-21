@@ -1,5 +1,7 @@
 package org.tkit.onecx.permission.bff.rs.mappers;
 
+import java.util.List;
+
 import jakarta.inject.Inject;
 
 import org.mapstruct.Mapper;
@@ -57,4 +59,6 @@ public abstract class AssignmentMapper {
 
     public abstract ExportAssignmentsRequest map(ExportAssignmentsRequestDTO exportAssignmentsRequestDTO);
 
+    public abstract AssignmentRolesSearchCriteria map(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO,
+            List<String> roles);
 }
