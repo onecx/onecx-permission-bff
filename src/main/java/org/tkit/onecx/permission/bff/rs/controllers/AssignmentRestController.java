@@ -1,5 +1,7 @@
 package org.tkit.onecx.permission.bff.rs.controllers;
 
+import java.util.List;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,6 +16,9 @@ import org.tkit.onecx.permission.bff.rs.mappers.AssignmentMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
+import gen.org.tkit.onecx.iam.client.api.AdminUserControllerApi;
+import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
+import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.AssignmentApiService;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.api.AssignmentInternalApi;
@@ -34,6 +39,10 @@ public class AssignmentRestController implements AssignmentApiService {
     @RestClient
     @Inject
     PermissionExportImportApi assignmentEximClient;
+
+    @RestClient
+    @Inject
+    AdminUserControllerApi iamClient;
 
     @Inject
     AssignmentMapper mapper;
@@ -136,6 +145,26 @@ public class AssignmentRestController implements AssignmentApiService {
         try (Response response = assignmentClient.searchAssignments(mapper.map(assignmentSearchCriteriaDTO))) {
             AssignmentPageResultDTO responseDTO = mapper.map(response.readEntity(AssignmentPageResult.class));
             return Response.status(response.getStatus()).entity(responseDTO).build();
+        }
+    }
+
+    @Override
+    public Response searchUserAssignments(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO) {
+        AssignmentPageResult pageResult;
+        List<String> roles = List.of();
+        try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getUserId())) {
+            UserRolesResponseIamV1 roleResponse = response.readEntity(UserRolesResponseIamV1.class);
+            if (roleResponse.getRoles() != null) {
+                roles = roleResponse.getRoles().stream().map(RoleIamV1::getName).toList();
+            }
+        }
+        if (roles.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        try (Response assignmentResponse = assignmentClient
+                .searchAssignmentsByRoles(mapper.map(assignmentUserSearchCriteriaDTO, roles))) {
+            pageResult = assignmentResponse.readEntity(AssignmentPageResult.class);
+            return Response.status(assignmentResponse.getStatus()).entity(mapper.map(pageResult)).build();
         }
     }
 

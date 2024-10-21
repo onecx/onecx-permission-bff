@@ -352,6 +352,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
+  /assignments/user/search:
+    post:
+      x-onecx:
+        permissions:
+          assignment:
+            - read
+      tags:
+        - assignment
+      description: Search for assignments
+      operationId: searchUserAssignments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentUserSearchCriteria'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentPageResult'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /assignments:
     post:
       x-onecx:
@@ -1115,6 +1144,22 @@ components:
           items:
             type: string
         roleId:
+          type: string
+        pageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        pageSize:
+          format: int32
+          description: The size of page
+          default: 100
+          maximum: 1000
+          type: integer
+    AssignmentUserSearchCriteria:
+      type: object
+      properties:
+        userId:
           type: string
         pageNumber:
           format: int32

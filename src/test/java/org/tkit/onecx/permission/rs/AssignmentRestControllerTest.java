@@ -19,6 +19,8 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.tkit.onecx.permission.bff.rs.controllers.AssignmentRestController;
 
+import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
+import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
@@ -458,5 +460,166 @@ class AssignmentRestControllerTest extends AbstractTest {
         Assertions.assertNotNull(output);
         mockServerClient.clear("MOCK_ID");
 
+    }
+
+    @Test
+    void searchUsersAssignmentsByCriteriaTest() {
+
+        UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();
+        rolesReponse.roles(List.of(new RoleIamV1().name("role1")));
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/user/roles/user1").withMethod(HttpMethod.GET))
+                .withId("MOCK_IAM_KC")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(rolesReponse)));
+
+        AssignmentRolesSearchCriteria criteria = new AssignmentRolesSearchCriteria();
+        criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
+
+        AssignmentPageResult pageResult = new AssignmentPageResult();
+        Assignment assignment = new Assignment();
+        assignment.permissionId("permission1").roleId("role1");
+        pageResult.stream(List.of(assignment)).size(1).number(1).totalElements(1L).totalPages(1L);
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/roles/search").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(criteria)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(pageResult)));
+
+        AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
+        criteriaDTO.pageNumber(1).userId("user1").pageSize(1);
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/user/search")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(AssignmentPageResultDTO.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(pageResult.getSize(), output.getSize());
+        Assertions.assertEquals(pageResult.getStream().size(), output.getStream().size());
+        Assertions.assertEquals(pageResult.getStream().get(0).getRoleId(), output.getStream().get(0).getRoleId());
+        Assertions.assertEquals(pageResult.getStream().get(0).getPermissionId(), output.getStream().get(0).getPermissionId());
+
+        mockServerClient.clear(MOCKID);
+        mockServerClient.clear("MOCK_IAM_KC");
+    }
+
+    @Test
+    void searchUsersAssignmentsByCriteria_No_Roles_Test() {
+
+        UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/user/roles/user1").withMethod(HttpMethod.GET))
+                .withId("MOCK_IAM_KC")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(rolesReponse)));
+
+        AssignmentRolesSearchCriteria criteria = new AssignmentRolesSearchCriteria();
+        criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
+
+        AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
+        criteriaDTO.pageNumber(1).userId("user1").pageSize(1);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/user/search")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+        mockServerClient.clear("MOCK_IAM_KC");
+    }
+
+    @Test
+    void searchUsersAssignmentsByCriteria_error_kc_Test() {
+
+        UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();
+        rolesReponse.roles(List.of());
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/user/roles/user1").withMethod(HttpMethod.GET))
+                .withId("MOCK_IAM_KC")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(rolesReponse)));
+
+        AssignmentRolesSearchCriteria criteria = new AssignmentRolesSearchCriteria();
+        criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
+
+        AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
+        criteriaDTO.pageNumber(1).userId("user1").pageSize(1);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/user/search")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+        mockServerClient.clear("MOCK_IAM_KC");
+    }
+
+    @Test
+    void searchUsersAssignmentsByCriteria_error_permission_api_Test() {
+
+        UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();
+        rolesReponse.roles(List.of(new RoleIamV1().name("role1")));
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/user/roles/user1").withMethod(HttpMethod.GET))
+                .withId("MOCK_IAM_KC")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(rolesReponse)));
+
+        AssignmentRolesSearchCriteria criteria = new AssignmentRolesSearchCriteria();
+        criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
+
+        AssignmentPageResult pageResult = new AssignmentPageResult();
+        Assignment assignment = new Assignment();
+        assignment.permissionId("permission1").roleId("role1");
+        pageResult.stream(List.of(assignment)).size(1).number(1).totalElements(1L).totalPages(1L);
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/internal/assignments/roles/search").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(criteria)))
+                .withId(MOCKID)
+                .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode()));
+
+        AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
+        criteriaDTO.pageNumber(1).userId("user1").pageSize(1);
+
+        given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/user/search")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+
+        mockServerClient.clear("MOCK_IAM_KC");
+        mockServerClient.clear(MOCKID);
     }
 }
