@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
+import org.tkit.onecx.permission.bff.rs.PermissionConfig;
 import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.RoleMapper;
 import org.tkit.quarkus.log.cdi.LogService;
@@ -45,6 +46,9 @@ public class RoleRestController implements RoleApiService {
 
     @Inject
     ExceptionMapper exceptionMapper;
+
+    @Inject
+    PermissionConfig config;
 
     @Override
     public Response createRole(CreateRolesRequestDTO createsRoleRequestDTO) {
@@ -82,6 +86,9 @@ public class RoleRestController implements RoleApiService {
 
     @Override
     public Response searchAvailableRoles(IAMRoleSearchCriteriaDTO searchCriteriaDTO) {
+        if (!config.restClients().iam().enabled()) {
+            return Response.status(418).build();
+        }
         try (Response response = iamClient.rolesSearchByCriteria(mapper.map(searchCriteriaDTO))) {
             IAMRolePageResultDTO responseDTO = mapper
                     .map(response.readEntity(RolePageResultIamV1.class));
