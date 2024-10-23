@@ -4,5 +4,7 @@ include::onecx-permission-bff-attributes.adoc[opts=optional]
 
 include::docs.adoc[opts=optional]
 
+=== Configuration
+include::onecx-permission-bff.adoc[opts=optional]
 
 include::onecx-permission-bff-docs.adoc[opts=optional]
