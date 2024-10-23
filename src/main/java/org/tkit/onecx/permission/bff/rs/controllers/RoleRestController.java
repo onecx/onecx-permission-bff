@@ -87,7 +87,7 @@ public class RoleRestController implements RoleApiService {
     @Override
     public Response searchAvailableRoles(IAMRoleSearchCriteriaDTO searchCriteriaDTO) {
         if (!config.restClients().iam().enabled()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(418).build();
         }
         try (Response response = iamClient.rolesSearchByCriteria(mapper.map(searchCriteriaDTO))) {
             IAMRolePageResultDTO responseDTO = mapper
