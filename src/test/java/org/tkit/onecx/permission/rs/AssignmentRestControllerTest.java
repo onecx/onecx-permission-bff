@@ -478,9 +478,9 @@ class AssignmentRestControllerTest extends AbstractTest {
         AssignmentRolesSearchCriteria criteria = new AssignmentRolesSearchCriteria();
         criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
 
-        AssignmentPageResult pageResult = new AssignmentPageResult();
-        Assignment assignment = new Assignment();
-        assignment.permissionId("permission1").roleId("role1");
+        UserAssignmentPageResult pageResult = new UserAssignmentPageResult();
+        UserAssignment assignment = new UserAssignment();
+        assignment.productName("product1").roleName("role1");
         pageResult.stream(List.of(assignment)).size(1).number(1).totalElements(1L).totalPages(1L);
 
         // create mock rest endpoint
@@ -504,13 +504,13 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(APPLICATION_JSON)
-                .extract().as(AssignmentPageResultDTO.class);
+                .extract().as(UserAssignmentPageResultDTO.class);
 
         Assertions.assertNotNull(output);
         Assertions.assertEquals(pageResult.getSize(), output.getSize());
         Assertions.assertEquals(pageResult.getStream().size(), output.getStream().size());
-        Assertions.assertEquals(pageResult.getStream().get(0).getRoleId(), output.getStream().get(0).getRoleId());
-        Assertions.assertEquals(pageResult.getStream().get(0).getPermissionId(), output.getStream().get(0).getPermissionId());
+        Assertions.assertEquals(pageResult.getStream().get(0).getRoleName(), output.getStream().get(0).getRoleName());
+        Assertions.assertEquals(pageResult.getStream().get(0).getProductName(), output.getStream().get(0).getProductName());
 
         mockServerClient.clear(MOCKID);
         mockServerClient.clear("MOCK_IAM_KC");
