@@ -14,6 +14,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.AssignmentMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
+import org.tkit.onecx.permission.bff.rs.mappers.UserMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.iam.client.api.AdminUserControllerApi;
@@ -24,6 +25,7 @@ import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.api.AssignmentInternalApi;
 import gen.org.tkit.onecx.permission.client.model.Assignment;
 import gen.org.tkit.onecx.permission.client.model.AssignmentPageResult;
+import gen.org.tkit.onecx.permission.client.model.UserAssignmentPageResult;
 import gen.org.tkit.onecx.permission.exim.client.api.PermissionExportImportApi;
 import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
 
@@ -46,6 +48,9 @@ public class AssignmentRestController implements AssignmentApiService {
 
     @Inject
     AssignmentMapper mapper;
+
+    @Inject
+    UserMapper userMapper;
 
     @Inject
     ExceptionMapper exceptionMapper;
@@ -150,7 +155,7 @@ public class AssignmentRestController implements AssignmentApiService {
 
     @Override
     public Response searchUserAssignments(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO) {
-        AssignmentPageResult pageResult;
+        UserAssignmentPageResult pageResult;
         List<String> roles = List.of();
         try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getUserId())) {
             UserRolesResponseIamV1 roleResponse = response.readEntity(UserRolesResponseIamV1.class);
@@ -163,8 +168,8 @@ public class AssignmentRestController implements AssignmentApiService {
         }
         try (Response assignmentResponse = assignmentClient
                 .searchAssignmentsByRoles(mapper.map(assignmentUserSearchCriteriaDTO, roles))) {
-            pageResult = assignmentResponse.readEntity(AssignmentPageResult.class);
-            return Response.status(assignmentResponse.getStatus()).entity(mapper.map(pageResult)).build();
+            pageResult = assignmentResponse.readEntity(UserAssignmentPageResult.class);
+            return Response.status(assignmentResponse.getStatus()).entity(userMapper.map(pageResult)).build();
         }
     }
 
