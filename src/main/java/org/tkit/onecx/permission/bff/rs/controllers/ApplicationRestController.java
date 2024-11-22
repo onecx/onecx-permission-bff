@@ -30,13 +30,6 @@ public class ApplicationRestController implements ApplicationApiService {
     ApplicationMapper mapper;
 
     @Override
-    public Response deleteByApplicationName(String name) {
-        try (Response response = applicationClient.deleteByApplicationName(name)) {
-            return Response.status(response.getStatus()).build();
-        }
-    }
-
-    @Override
     public Response searchApplications(ApplicationSearchCriteriaDTO applicationSearchCriteriaDTO) {
         try (Response response = applicationClient.searchApplications(mapper.map(applicationSearchCriteriaDTO))) {
             ApplicationPageResultDTO responseDTO = mapper.map(response.readEntity(ApplicationPageResult.class));
