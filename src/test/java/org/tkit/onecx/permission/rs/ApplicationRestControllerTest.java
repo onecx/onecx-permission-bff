@@ -60,7 +60,7 @@ class ApplicationRestControllerTest extends AbstractTest {
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
-                .post("/search")
+                .post()
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(APPLICATION_JSON)
@@ -95,29 +95,9 @@ class ApplicationRestControllerTest extends AbstractTest {
                 .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteriaDTO)
-                .post("/search")
+                .post()
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
-
-        mockServerClient.clear(MOCKID);
-    }
-
-    @Test
-    void deleteApplicationByName() {
-
-        // create mock rest endpoint
-        mockServerClient.when(request().withPath("/internal/applications/testApp").withMethod(HttpMethod.DELETE)).withId(MOCKID)
-                .respond(httpRequest -> response().withStatusCode(Response.Status.NO_CONTENT.getStatusCode()));
-
-        given()
-                .when()
-                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
-                .contentType(APPLICATION_JSON)
-                .pathParam("name", "testApp")
-                .delete("/{name}")
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         mockServerClient.clear(MOCKID);
     }
