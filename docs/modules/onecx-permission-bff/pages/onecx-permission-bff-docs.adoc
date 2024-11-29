@@ -111,7 +111,7 @@ app:
         enabled: true
         spec:
           kcConfig:
-            defaultClientScopes: [ ocx-pm:all, ocx-pm:read, ocx-ws:read, ocx-ps:read, ocx-ia:read ]
+            defaultClientScopes: [ ocx-pm:all, ocx-pm:read, ocx-pm:write, ocx-ws:read, ocx-ps:read, ocx-ia:read ]
 
 ----
 
