@@ -24,6 +24,8 @@ import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
+import gen.org.tkit.onecx.permission.exim.client.model.EximProblemDetailInvalidParam;
+import gen.org.tkit.onecx.permission.exim.client.model.EximProblemDetailResponse;
 import gen.org.tkit.onecx.permission.exim.client.model.ExportAssignmentsRequest;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -458,6 +460,51 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .statusCode(Response.Status.OK.getStatusCode());
 
         Assertions.assertNotNull(output);
+        mockServerClient.clear("MOCK_ID");
+
+    }
+
+    @Test
+    void importAssignments_exception_mapping_Test() {
+        AssignmentSnapshot assignmentSnapshot = new AssignmentSnapshot();
+        assignmentSnapshot.setAssignments(Map.of("product1",
+                Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
+
+        EximProblemDetailResponse eximProblemDetailResponse = new EximProblemDetailResponse();
+        eximProblemDetailResponse.setDetail("some Detail");
+        EximProblemDetailInvalidParam invalidParam = new EximProblemDetailInvalidParam();
+        invalidParam.setName("param1");
+        invalidParam.setMessage("duplicated key");
+        eximProblemDetailResponse.setInvalidParams(List.of(invalidParam));
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/exim/v1/assignments/import").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(assignmentSnapshot)))
+                .withId("MOCK_ID")
+                .respond(httpRequest -> response()
+                        .withStatusCode(Response.Status.CONFLICT.getStatusCode())
+                        .withBody(JsonBody.json(eximProblemDetailResponse)));
+
+        AssignmentSnapshot assignmentSnapshotDTO = new AssignmentSnapshot();
+        assignmentSnapshotDTO.setAssignments(Map.of("product1",
+                Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
+
+        var output = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(assignmentSnapshotDTO)
+                .post("/import")
+                .then()
+                .contentType(APPLICATION_JSON)
+                .statusCode(Response.Status.CONFLICT.getStatusCode())
+                .extract().as(ProblemDetailResponseDTO.class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals(output.getDetail(), eximProblemDetailResponse.getDetail());
+        Assertions.assertEquals(output.getInvalidParams().get(0).getName(),
+                eximProblemDetailResponse.getInvalidParams().get(0).getName());
+
         mockServerClient.clear("MOCK_ID");
 
     }
