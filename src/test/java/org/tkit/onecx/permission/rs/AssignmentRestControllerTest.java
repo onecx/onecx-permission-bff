@@ -595,6 +595,31 @@ class AssignmentRestControllerTest extends AbstractTest {
     }
 
     @Test
+    void searchUsersAssignmentsByCriteria_KC_SVC_ROLES_NOT_FOUND_Test() {
+
+        // create mock rest endpoint
+        mockServerClient.when(request().withPath("/v1/user/roles/user1").withMethod(HttpMethod.GET))
+                .withId("MOCK_IAM_KC")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+
+        AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
+        criteriaDTO.pageNumber(1).userId("user1").pageSize(1);
+
+        var errorResponse = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteriaDTO)
+                .post("/user/search")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .extract().as(ProblemDetailResponseDTO.class);
+        Assertions.assertEquals("USER_NOT_FOUND", errorResponse.getDetail());
+        mockServerClient.clear("MOCK_IAM_KC");
+    }
+
+    @Test
     void searchUsersAssignmentsByCriteria_error_kc_Test() {
 
         UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();

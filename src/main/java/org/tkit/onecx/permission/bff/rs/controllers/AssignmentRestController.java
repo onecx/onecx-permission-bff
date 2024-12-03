@@ -12,6 +12,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tkit.onecx.permission.bff.rs.mappers.AssignmentMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.UserMapper;
@@ -34,6 +36,7 @@ import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
 @LogService
 public class AssignmentRestController implements AssignmentApiService {
 
+    private static final Logger log = LoggerFactory.getLogger(AssignmentRestController.class);
     @RestClient
     @Inject
     AssignmentInternalApi assignmentClient;
@@ -162,6 +165,9 @@ public class AssignmentRestController implements AssignmentApiService {
             if (roleResponse.getRoles() != null) {
                 roles = roleResponse.getRoles().stream().map(RoleIamV1::getName).toList();
             }
+        } catch (ClientWebApplicationException exception) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(exceptionMapper.exception("400", "USER_NOT_FOUND")).build();
         }
         if (roles.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
