@@ -64,6 +64,14 @@ public class UserRestController implements UserApiService {
     }
 
     @Override
+    public Response getTokenRoles() {
+        var token = headers.getHeaderString(AUTHORIZATION);
+        try (Response response = roleClient.getTokenRoles(token)) {
+            return Response.status(response.getStatus()).entity(response.readEntity(String[].class)).build();
+        }
+    }
+
+    @Override
     public Response getUserAssignments(UserCriteriaDTO userCriteriaDTO) {
         var token = headers.getHeaderString(AUTHORIZATION);
         try (Response assignmentResponse = assignmentClient
