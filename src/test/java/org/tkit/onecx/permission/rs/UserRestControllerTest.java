@@ -5,6 +5,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.ws.rs.HttpMethod;
@@ -65,6 +66,35 @@ class UserRestControllerTest extends AbstractTest {
 
         Assertions.assertNotNull(output);
         Assertions.assertEquals(1, output.getStream().size());
+        mockServerClient.clear("mock1");
+    }
+
+    @Test
+    void getTokenRoles() {
+        var testToken = "Bearer " + token;
+
+        List<String> roles = new ArrayList<>();
+        roles.add("role1");
+        mockServerClient.when(request().withPath("/internal/roles/token").withMethod(HttpMethod.POST)
+                .withBody(testToken))
+                .withId("mock1")
+                .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(roles)));
+
+        var output = given()
+                .when()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .get("/roles/token")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().as(String[].class);
+
+        Assertions.assertNotNull(output);
+        Assertions.assertEquals("role1", output[0]);
         mockServerClient.clear("mock1");
     }
 
