@@ -160,8 +160,8 @@ public class AssignmentRestController implements AssignmentApiService {
     public Response searchUserAssignments(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO) {
         UserAssignmentPageResult pageResult;
         List<String> roles = List.of();
-        try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getProvider(),
-                assignmentUserSearchCriteriaDTO.getDomain(), assignmentUserSearchCriteriaDTO.getUserId())) {
+        try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getUserId(),
+                mapper.maps(assignmentUserSearchCriteriaDTO))) {
             UserRolesResponseIamV1 roleResponse = response.readEntity(UserRolesResponseIamV1.class);
             if (roleResponse.getRoles() != null) {
                 roles = roleResponse.getRoles().stream().map(RoleIamV1::getName).toList();

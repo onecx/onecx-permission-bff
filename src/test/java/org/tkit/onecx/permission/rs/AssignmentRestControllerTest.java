@@ -21,6 +21,7 @@ import org.tkit.onecx.permission.bff.rs.controllers.AssignmentRestController;
 
 import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
 import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
+import gen.org.tkit.onecx.iam.client.model.UserRolesSearchRequestIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
@@ -516,7 +517,8 @@ class AssignmentRestControllerTest extends AbstractTest {
         rolesReponse.roles(List.of(new RoleIamV1().name("role1")));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/kc0/master/roles/user1").withMethod(HttpMethod.GET))
+        mockServerClient.when(request().withPath("/v1/user1/roles").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserRolesSearchRequestIamV1().issuer("testIssuer"))))
                 .withId("MOCK_IAM_KC")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -539,7 +541,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                         .withBody(JsonBody.json(pageResult)));
 
         AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).userId("user1").provider("kc0").domain("master").pageSize(1);
+        criteriaDTO.pageNumber(1).userId("user1").issuer("testIssuer").pageSize(1);
 
         var output = given()
                 .when()
@@ -569,7 +571,8 @@ class AssignmentRestControllerTest extends AbstractTest {
         UserRolesResponseIamV1 rolesReponse = new UserRolesResponseIamV1();
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/kc0/master/roles/user1").withMethod(HttpMethod.GET))
+        mockServerClient.when(request().withPath("/v1/user1/roles").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserRolesSearchRequestIamV1().issuer("testIssuer"))))
                 .withId("MOCK_IAM_KC")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -579,7 +582,7 @@ class AssignmentRestControllerTest extends AbstractTest {
         criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
 
         AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).userId("user1").provider("kc0").domain("master").pageSize(1);
+        criteriaDTO.pageNumber(1).userId("user1").issuer("testIssuer").pageSize(1);
 
         given()
                 .when()
@@ -598,12 +601,13 @@ class AssignmentRestControllerTest extends AbstractTest {
     void searchUsersAssignmentsByCriteria_KC_SVC_ROLES_NOT_FOUND_Test() {
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/kc0/master/roles/user1").withMethod(HttpMethod.GET))
+        mockServerClient.when(request().withPath("/v1/user1/roles").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserRolesSearchRequestIamV1().issuer("testIssuer"))))
                 .withId("MOCK_IAM_KC")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()));
 
         AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).userId("user1").provider("kc0").domain("master").pageSize(1);
+        criteriaDTO.pageNumber(1).userId("user1").issuer("testIssuer").pageSize(1);
 
         var errorResponse = given()
                 .when()
@@ -626,7 +630,8 @@ class AssignmentRestControllerTest extends AbstractTest {
         rolesReponse.roles(List.of());
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/kc0/master/roles/user1").withMethod(HttpMethod.GET))
+        mockServerClient.when(request().withPath("/v1/user1/roles").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserRolesSearchRequestIamV1().issuer("testIssuer"))))
                 .withId("MOCK_IAM_KC")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -636,7 +641,7 @@ class AssignmentRestControllerTest extends AbstractTest {
         criteria.pageNumber(1).pageSize(1).roles(List.of("role1"));
 
         AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).userId("user1").provider("kc0").domain("master").pageSize(1);
+        criteriaDTO.pageNumber(1).userId("user1").issuer("testIssuer").pageSize(1);
 
         given()
                 .when()
@@ -658,7 +663,8 @@ class AssignmentRestControllerTest extends AbstractTest {
         rolesReponse.roles(List.of(new RoleIamV1().name("role1")));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/v1/kc0/master/roles/user1").withMethod(HttpMethod.GET))
+        mockServerClient.when(request().withPath("/v1/user1/roles").withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserRolesSearchRequestIamV1().issuer("testIssuer"))))
                 .withId("MOCK_IAM_KC")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -679,7 +685,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode()));
 
         AssignmentUserSearchCriteriaDTO criteriaDTO = new AssignmentUserSearchCriteriaDTO();
-        criteriaDTO.pageNumber(1).userId("user1").provider("kc0").domain("master").pageSize(1);
+        criteriaDTO.pageNumber(1).userId("user1").issuer("testIssuer").pageSize(1);
 
         given()
                 .when()

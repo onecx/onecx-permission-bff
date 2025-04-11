@@ -1107,14 +1107,11 @@ components:
       type: object
       required:
         - userId
-        - provider
-        - domain
+        - issuer
       properties:
         userId:
           type: string
-        provider:
-          type: string
-        domain:
+        issuer:
           type: string
         pageNumber:
           format: int32
