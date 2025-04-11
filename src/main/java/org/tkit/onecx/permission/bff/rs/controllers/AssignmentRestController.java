@@ -25,11 +25,11 @@ import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.AssignmentApiService;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.api.AssignmentInternalApi;
+import gen.org.tkit.onecx.permission.client.api.EximInternalApi;
 import gen.org.tkit.onecx.permission.client.model.Assignment;
 import gen.org.tkit.onecx.permission.client.model.AssignmentPageResult;
+import gen.org.tkit.onecx.permission.client.model.AssignmentSnapshot;
 import gen.org.tkit.onecx.permission.client.model.UserAssignmentPageResult;
-import gen.org.tkit.onecx.permission.exim.client.api.PermissionExportImportApi;
-import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
 
 @ApplicationScoped
 @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
@@ -43,7 +43,7 @@ public class AssignmentRestController implements AssignmentApiService {
 
     @RestClient
     @Inject
-    PermissionExportImportApi assignmentEximClient;
+    EximInternalApi assignmentEximClient;
 
     @RestClient
     @Inject

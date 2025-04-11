@@ -23,10 +23,6 @@ import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
 import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
-import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
-import gen.org.tkit.onecx.permission.exim.client.model.EximProblemDetailInvalidParam;
-import gen.org.tkit.onecx.permission.exim.client.model.EximProblemDetailResponse;
-import gen.org.tkit.onecx.permission.exim.client.model.ExportAssignmentsRequest;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -406,7 +402,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/exim/v1/assignments/export").withMethod(HttpMethod.POST)
+        mockServerClient.when(request().withPath("/internal/exim/assignments/export").withMethod(HttpMethod.POST)
                 .withBody(JsonBody.json(request)))
                 .withId("MOCK_ID")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
@@ -440,7 +436,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
 
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/exim/v1/assignments/import").withMethod(HttpMethod.POST)
+        mockServerClient.when(request().withPath("/internal/exim/assignments/import").withMethod(HttpMethod.POST)
                 .withBody(JsonBody.json(assignmentSnapshot)))
                 .withId("MOCK_ID")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode()));
@@ -470,14 +466,14 @@ class AssignmentRestControllerTest extends AbstractTest {
         assignmentSnapshot.setAssignments(Map.of("product1",
                 Map.of("app1", Map.of("role1", Map.of("resource1", List.of("read", "write"))))));
 
-        EximProblemDetailResponse eximProblemDetailResponse = new EximProblemDetailResponse();
+        ProblemDetailResponse eximProblemDetailResponse = new ProblemDetailResponse();
         eximProblemDetailResponse.setDetail("some Detail");
-        EximProblemDetailInvalidParam invalidParam = new EximProblemDetailInvalidParam();
+        ProblemDetailInvalidParam invalidParam = new ProblemDetailInvalidParam();
         invalidParam.setName("param1");
         invalidParam.setMessage("duplicated key");
         eximProblemDetailResponse.setInvalidParams(List.of(invalidParam));
         // create mock rest endpoint
-        mockServerClient.when(request().withPath("/exim/v1/assignments/import").withMethod(HttpMethod.POST)
+        mockServerClient.when(request().withPath("/internal/exim/assignments/import").withMethod(HttpMethod.POST)
                 .withBody(JsonBody.json(assignmentSnapshot)))
                 .withId("MOCK_ID")
                 .respond(httpRequest -> response()
