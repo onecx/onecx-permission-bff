@@ -34,3 +34,7 @@ app:
         spec:
           kcConfig:
             defaultClientScopes: [ ocx-pm:all, ocx-pm:read, ocx-pm:write, ocx-ws:read, ocx-ps:read, ocx-ia:read ]
+    microservice:
+      spec:
+        description: OneCX Permission Backend For Frontend
+        name: OneCX Permission BFF
