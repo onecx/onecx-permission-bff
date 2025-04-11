@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
-import gen.org.tkit.onecx.permission.exim.client.model.AssignmentSnapshot;
-import gen.org.tkit.onecx.permission.exim.client.model.ExportAssignmentsRequest;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public abstract class AssignmentMapper {

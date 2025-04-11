@@ -182,19 +182,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>permission-svc-exim</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://raw.githubusercontent.com/onecx/onecx-permission-svc/refs/heads/main/src/main/openapi/onecx-permission-exim-v1-openapi.yaml</url>
-                            <outputDirectory>target/tmp/openapi</outputDirectory>
-                            <outputFileName>onecx-permission-exim-svc.yaml</outputFileName>
-                            <skipCache>true</skipCache>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>workspace-svc-external-v1</id>
                         <phase>generate-resources</phase>
                         <goals>

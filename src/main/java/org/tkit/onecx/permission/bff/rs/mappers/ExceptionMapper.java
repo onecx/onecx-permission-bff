@@ -20,7 +20,6 @@ import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailInvalidParamDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailParamDTO;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.ProblemDetailResponseDTO;
-import gen.org.tkit.onecx.permission.exim.client.model.EximProblemDetailResponse;
 import gen.org.tkit.onecx.permission.model.ProblemDetailResponse;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
@@ -68,7 +67,7 @@ public interface ExceptionMapper {
             return Response.status(400).build();
         } else if (ex.getResponse().getStatus() == 409) {
             return Response.status(ex.getResponse().getStatus())
-                    .entity(mapImportException(ex.getResponse().readEntity(EximProblemDetailResponse.class))).build();
+                    .entity(mapImportException(ex.getResponse().readEntity(ProblemDetailResponse.class))).build();
         } else {
             if (ex.getResponse().getMediaType() != null
                     && ex.getResponse().getMediaType().toString().contains(APPLICATION_JSON)) {
@@ -82,7 +81,7 @@ public interface ExceptionMapper {
 
     @Mapping(target = "removeParamsItem", ignore = true)
     @Mapping(target = "removeInvalidParamsItem", ignore = true)
-    ProblemDetailResponseDTO mapImportException(EximProblemDetailResponse eximProblemDetailResponse);
+    ProblemDetailResponseDTO mapImportException(ProblemDetailResponse eximProblemDetailResponse);
 
     @Mapping(target = "removeParamsItem", ignore = true)
     @Mapping(target = "removeInvalidParamsItem", ignore = true)
