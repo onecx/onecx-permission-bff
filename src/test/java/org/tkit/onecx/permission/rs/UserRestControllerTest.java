@@ -31,10 +31,9 @@ class UserRestControllerTest extends AbstractTest {
     @InjectMockServerClient
     MockServerClient mockServerClient;
 
-    final String token = keycloakClient.getAccessToken(ADMIN);
-
     @Test
     void getUserRoles() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
@@ -71,6 +70,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getTokenRoles() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
 
         List<String> roles = new ArrayList<>();
@@ -100,6 +100,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserPermissions() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
 
         PermissionRequest permissionRequest = new PermissionRequest();
@@ -137,6 +138,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserAssignments() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
         AssignmentRequest assignmentRequest = new AssignmentRequest();
         assignmentRequest.pageNumber(0).pageSize(5).token(testToken);
@@ -173,6 +175,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserRoles_BAD_REQUEST() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
         RoleRequest roleRequest = new RoleRequest();
         roleRequest.pageNumber(0).pageSize(5).token(testToken);
@@ -204,6 +207,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserPermissions_BAD_REQUEST() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
 
         PermissionRequest permissionRequest = new PermissionRequest();
@@ -235,6 +239,7 @@ class UserRestControllerTest extends AbstractTest {
 
     @Test
     void getUserAssignments_BAD_REQUEST() {
+        String token = keycloakClient.getAccessToken(ADMIN);
         var testToken = "Bearer " + token;
         AssignmentRequest assignmentRequest = new AssignmentRequest();
         assignmentRequest.pageNumber(0).pageSize(5).token(testToken);
