@@ -1,5 +1,7 @@
 app:
   name: bff
+  template:
+    oidc_client_id: "ONECX_OIDC_CLIENT_CLIENT_ID"
   image:
     repository: "onecx/onecx-permission-bff"
   operator:
@@ -34,3 +36,7 @@ app:
         spec:
           kcConfig:
             defaultClientScopes: [ ocx-pm:all, ocx-pm:read, ocx-pm:write, ocx-ws:read, ocx-ps:read, ocx-ia:read ]
+    microservice:
+      spec:
+        description: OneCX Permission Backend For Frontend
+        name: OneCX Permission BFF
