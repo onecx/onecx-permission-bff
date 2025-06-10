@@ -10,6 +10,7 @@ import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gen.org.tkit.onecx.iam.client.model.UserRolesSearchRequestIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
 import gen.org.tkit.onecx.permission.client.model.*;
 
@@ -59,4 +60,6 @@ public abstract class AssignmentMapper {
 
     public abstract AssignmentRolesSearchCriteria map(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO,
             List<String> roles);
+
+    public abstract UserRolesSearchRequestIamV1 maps(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO);
 }
