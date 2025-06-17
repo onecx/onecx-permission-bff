@@ -19,7 +19,7 @@ import org.tkit.onecx.permission.bff.rs.mappers.ExceptionMapper;
 import org.tkit.onecx.permission.bff.rs.mappers.UserMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
-import gen.org.tkit.onecx.iam.client.api.AdminUserControllerApi;
+import gen.org.tkit.onecx.iam.client.api.AdminControllerApi;
 import gen.org.tkit.onecx.iam.client.model.RoleIamV1;
 import gen.org.tkit.onecx.iam.client.model.UserRolesResponseIamV1;
 import gen.org.tkit.onecx.permission.bff.rs.internal.AssignmentApiService;
@@ -47,7 +47,7 @@ public class AssignmentRestController implements AssignmentApiService {
 
     @RestClient
     @Inject
-    AdminUserControllerApi iamClient;
+    AdminControllerApi iamClient;
 
     @Inject
     AssignmentMapper mapper;
@@ -160,7 +160,8 @@ public class AssignmentRestController implements AssignmentApiService {
     public Response searchUserAssignments(AssignmentUserSearchCriteriaDTO assignmentUserSearchCriteriaDTO) {
         UserAssignmentPageResult pageResult;
         List<String> roles = List.of();
-        try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getUserId())) {
+        try (Response response = iamClient.getUserRoles(assignmentUserSearchCriteriaDTO.getUserId(),
+                mapper.maps(assignmentUserSearchCriteriaDTO))) {
             UserRolesResponseIamV1 roleResponse = response.readEntity(UserRolesResponseIamV1.class);
             if (roleResponse.getRoles() != null) {
                 roles = roleResponse.getRoles().stream().map(RoleIamV1::getName).toList();
