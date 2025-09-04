@@ -175,7 +175,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://raw.githubusercontent.com/onecx/onecx-permission-svc/main/src/main/openapi/onecx-permission-internal-openapi.yaml</url>
+                            <url>https://raw.githubusercontent.com/onecx/onecx-permission-svc/main/src/main/openapi/onecx-permission-internal.yaml</url>
                             <outputDirectory>target/tmp/openapi</outputDirectory>
                             <outputFileName>onecx-permission-svc.yaml</outputFileName>
                             <skipCache>true</skipCache>
@@ -188,7 +188,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://raw.githubusercontent.com/onecx/onecx-workspace-svc/main/src/main/openapi/onecx-workspace-v1-openapi.yaml</url>
+                            <url>https://raw.githubusercontent.com/onecx/onecx-workspace-svc/main/src/main/openapi/onecx-workspace-v1.yaml</url>
                             <outputDirectory>target/tmp/openapi</outputDirectory>
                             <outputFileName>onecx-workspace-svc-v1.yaml</outputFileName>
                             <skipCache>true</skipCache>
