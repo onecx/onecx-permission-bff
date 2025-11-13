@@ -1,2 +1,2 @@
 # onecx-permission-bff
-OneCx permission BFF
+OneCX Permission Backend-For-Frontend (BFF)
