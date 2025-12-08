@@ -1,1 +1,0 @@
-* xref:onecx-permission-bff:index.adoc[Permission Bff]
