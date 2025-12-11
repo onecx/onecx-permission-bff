@@ -54,7 +54,7 @@ quarkus.openapi-generator.codegen.spec.onecx_iam_svc_v1_yaml.enable-security-gen
 %prod.quarkus.rest-client.onecx_workspace_svc.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
 %prod.quarkus.rest-client.onecx_product_store_svc.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
 %prod.quarkus.rest-client.onecx_iam_svc.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
-%prod.quarkus.oidc-client.client-id=${ONECX_OIDC_CLIENT_CLIENT_ID:${quarkus.application.name}}
+%prod.quarkus.oidc-client.client-id=${quarkus.application.name}
 ----
 ====
 
@@ -78,8 +78,6 @@ Default values
 ----
 app:
   name: bff
-  template:
-    oidc_client_id: "ONECX_OIDC_CLIENT_CLIENT_ID"
   image:
     repository: "onecx/onecx-permission-bff"
   operator:
@@ -117,6 +115,10 @@ app:
     microservice:
       spec:
         description: OneCX Permission Backend For Frontend
+        name: OneCX Permission BFF
+----
+
+ description: OneCX Permission Backend For Frontend
         name: OneCX Permission BFF
 ----
 
