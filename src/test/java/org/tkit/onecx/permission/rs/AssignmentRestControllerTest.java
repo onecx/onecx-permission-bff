@@ -159,6 +159,7 @@ class AssignmentRestControllerTest extends AbstractTest {
                 .withBody(JsonBody.json(criteria)))
                 .withId(MOCKID)
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withBody(JsonBody.json(new gen.org.tkit.onecx.permission.model.ProblemDetailResponse().detail("test")))
                         .withContentType(MediaType.APPLICATION_JSON));
 
         AssignmentSearchCriteriaDTO criteriaDTO = new AssignmentSearchCriteriaDTO();

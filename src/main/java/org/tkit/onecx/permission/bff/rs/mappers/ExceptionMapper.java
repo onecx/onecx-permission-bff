@@ -63,9 +63,11 @@ public interface ExceptionMapper {
     }
 
     default Response clientException(ClientWebApplicationException ex) {
-        if (ex.getResponse().getStatus() == 500) {
-            return Response.status(400).build();
-        } else if (ex.getResponse().getStatus() == 409) {
+        if (ex.getResponse().getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else if (ex.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else if (ex.getResponse().getStatus() == Response.Status.CONFLICT.getStatusCode()) {
             return Response.status(ex.getResponse().getStatus())
                     .entity(mapImportException(ex.getResponse().readEntity(ProblemDetailResponse.class))).build();
         } else {
