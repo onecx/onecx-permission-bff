@@ -184,6 +184,7 @@ class UserRestControllerTest extends AbstractTest {
                 .withBody(JsonBody.json(roleRequest)))
                 .withId("mock1")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withBody(JsonBody.json(new gen.org.tkit.onecx.permission.model.ProblemDetailResponse().detail("test")))
                         .withContentType(MediaType.APPLICATION_JSON));
 
         UserCriteriaDTO criteriaDTO = new UserCriteriaDTO();
@@ -217,6 +218,7 @@ class UserRestControllerTest extends AbstractTest {
                 .withBody(JsonBody.json(permissionRequest)))
                 .withId("mock2")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withBody(JsonBody.json(new gen.org.tkit.onecx.permission.model.ProblemDetailResponse().detail("test")))
                         .withContentType(MediaType.APPLICATION_JSON));
 
         UserCriteriaDTO criteriaDTO = new UserCriteriaDTO();
@@ -248,6 +250,7 @@ class UserRestControllerTest extends AbstractTest {
                 .withBody(JsonBody.json(assignmentRequest)))
                 .withId("mock2")
                 .respond(httpRequest -> response().withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withBody(JsonBody.json(new gen.org.tkit.onecx.permission.model.ProblemDetailResponse().detail("test")))
                         .withContentType(MediaType.APPLICATION_JSON));
 
         UserCriteriaDTO criteriaDTO = new UserCriteriaDTO();
