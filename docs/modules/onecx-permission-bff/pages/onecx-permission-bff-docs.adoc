@@ -118,9 +118,3 @@ app:
         name: OneCX Permission BFF
 ----
 
- description: OneCX Permission Backend For Frontend
-        name: OneCX Permission BFF
-----
-
--
-
