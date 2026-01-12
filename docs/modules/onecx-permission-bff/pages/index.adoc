@@ -1,8 +1,7 @@
 include::onecx-permission-bff-attributes.adoc[opts=optional]
 
-== onecx-permission-bff
+= OneCX Permission Backend For Frontend
 
-include::docs.adoc[opts=optional]
 
 
 include::onecx-permission-bff-docs.adoc[opts=optional]
