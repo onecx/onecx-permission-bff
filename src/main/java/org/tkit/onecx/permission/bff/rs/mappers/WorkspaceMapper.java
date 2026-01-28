@@ -3,8 +3,10 @@ package org.tkit.onecx.permission.bff.rs.mappers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
 import gen.org.tkit.onecx.permission.bff.rs.internal.model.*;
@@ -24,6 +26,13 @@ public interface WorkspaceMapper {
     ProductDetailsDTO map(ProductsAbstract productsAbstract);
 
     List<ProductDetailsDTO> map(List<ProductsAbstract> productsAbstracts);
+
+    @AfterMapping
+    default void afterMapDistinctProductsMfes(@MappingTarget ProductDetailsDTO productDetailsDTO) {
+        if (!productDetailsDTO.getMfe().isEmpty()) {
+            productDetailsDTO.setMfe(productDetailsDTO.getMfe().stream().distinct().toList());
+        }
+    }
 
     default WorkspaceDetailsDTO map(List<String> workspaceRoles, ProductsLoadResult productsLoadResult) {
         WorkspaceDetailsDTO workspaceDetailsDTO = new WorkspaceDetailsDTO();

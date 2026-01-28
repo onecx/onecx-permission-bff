@@ -143,9 +143,11 @@ class WorkspaceRestControllerTest extends AbstractTest {
         productsAbstract2.setName("product2");
         MicrofrontendAbstract mfe2 = new MicrofrontendAbstract();
         mfe2.appId("mfe2").appName("mfe2");
+        MicrofrontendAbstract mfe2duplication = new MicrofrontendAbstract();
+        mfe2duplication.appId("mfe2").appName("mfe2");
         MicroserviceAbstract ms2 = new MicroserviceAbstract();
         ms2.appId("ms2").appName("ms2");
-        productsAbstract2.setMicrofrontends(List.of(mfe2));
+        productsAbstract2.setMicrofrontends(List.of(mfe2, mfe2duplication));
         productsAbstract2.setMicroservices(List.of(ms2));
 
         result.setStream(List.of(productsAbstract1, productsAbstract2));
