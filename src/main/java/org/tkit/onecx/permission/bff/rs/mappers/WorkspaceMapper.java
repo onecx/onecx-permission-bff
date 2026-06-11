@@ -29,7 +29,7 @@ public interface WorkspaceMapper {
 
     @AfterMapping
     default void afterMapDistinctProductsMfes(@MappingTarget ProductDetailsDTO productDetailsDTO) {
-        if (!productDetailsDTO.getMfe().isEmpty()) {
+        if (productDetailsDTO.getMfe() != null && !productDetailsDTO.getMfe().isEmpty()) {
             productDetailsDTO.setMfe(productDetailsDTO.getMfe().stream().distinct().toList());
         }
     }
