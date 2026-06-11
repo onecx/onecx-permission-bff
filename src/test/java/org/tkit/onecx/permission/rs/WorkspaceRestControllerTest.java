@@ -114,7 +114,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
         String workspaceName = "test-workspace";
         Workspace workspace = new Workspace();
         workspace.name("test-workspace").workspaceRoles(Set.of("role1", "role2"))
-                .products(Set.of("product1", "product2"));
+                .products(Set.of("product1", "product2", "product3"));
 
         // create mock rest endpoint
         mockServerClient
@@ -123,7 +123,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
                 .respond(httpRequest -> response().withStatusCode(Response.Status.OK.getStatusCode())
                         .withBody(JsonBody.json(workspace)));
 
-        List<String> productNames = List.of("product1", "product2");
+        List<String> productNames = List.of("product1", "product2", "product3");
         ProductItemLoadSearchCriteria criteria = new ProductItemLoadSearchCriteria();
         criteria.setProductNames(productNames);
         criteria.setPageSize(productNames.size());
@@ -150,10 +150,16 @@ class WorkspaceRestControllerTest extends AbstractTest {
         productsAbstract2.setMicrofrontends(List.of(mfe2, mfe2duplication));
         productsAbstract2.setMicroservices(List.of(ms2));
 
-        result.setStream(List.of(productsAbstract1, productsAbstract2));
+        ProductsAbstract productsAbstract3 = new ProductsAbstract();
+        productsAbstract3.setName("product3");
+        MicroserviceAbstract ms3 = new MicroserviceAbstract();
+        ms2.appId("ms3").appName("ms3");
+        productsAbstract3.setMicroservices(List.of(ms3));
+
+        result.setStream(List.of(productsAbstract1, productsAbstract2, productsAbstract3));
         result.setTotalElements(2L);
         result.setNumber(0);
-        result.setSize(2);
+        result.setSize(3);
         result.setTotalPages(1L);
 
         // create mock rest endpoint
@@ -175,7 +181,7 @@ class WorkspaceRestControllerTest extends AbstractTest {
                 .extract().as(WorkspaceDetailsDTO.class);
 
         Assertions.assertNotNull(output);
-        Assertions.assertEquals(2, output.getProducts().size());
+        Assertions.assertEquals(3, output.getProducts().size());
         Assertions.assertTrue(output.getWorkspaceRoles().contains("role1"));
         Assertions.assertTrue(output.getWorkspaceRoles().contains("role2"));
         Assertions.assertEquals(1, output.getProducts().get(0).getMfe().size());
